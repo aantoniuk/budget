@@ -3,8 +3,9 @@ package com.budget.core.rest;
 import com.budget.core.dao.CategoryDao;
 import com.budget.core.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,48 +20,62 @@ public class CategoryController {
         this.categoryDao = categoryDao;
     }
 
-    @RequestMapping("/create")
-    public void create(String name, Long parentId) {
-        Category category = new Category();
-        category.setName(name);
-        category.setParentId(parentId);
+    @RequestMapping(method = RequestMethod.POST, value = "/categories")
+    public ResponseEntity<Category> create(@RequestBody Category category) {
+        if (categoryDao.existsByName(category.getName())) {
+            return new ResponseEntity<>(category, HttpStatus.CONFLICT);
+        }
+        Category categoryForResponse = categoryDao.save(category);
 
-        categoryDao.save(category);
+        return new ResponseEntity<>(categoryForResponse, HttpStatus.CREATED);
     }
 
-    @RequestMapping("/update")
-    public void update(Long id, String name, Long parentId) {
-        Category category = categoryDao.findOne(id);
-        if(category == null) {
-            throw new NullPointerException("Category is not found by id:" + id);
+    @RequestMapping(method = RequestMethod.PUT, value = "/categories/{id}")
+    public ResponseEntity<Category> update(@PathVariable("id") Long id, @RequestBody Category category) {
+        Category localCategory = categoryDao.findOne(id);
+        if(localCategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if(name != null) {
-            category.setName(name);
+        if(category.getName() != null) {
+            localCategory.setName(category.getName());
         }
-        if(parentId != null) {
-            category.setParentId(parentId);
+        if(category.getDescription() != null) {
+            localCategory.setDescription(category.getDescription());
         }
+        localCategory.setParentId(category.getParentId());
+        localCategory = categoryDao.save(category);
 
-        categoryDao.save(category);
+        return new ResponseEntity<>(localCategory, HttpStatus.OK);
     }
 
-    @RequestMapping("/remove")
-    public void remove(long id) {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/categories/{id}")
+    public ResponseEntity<Category> remove(@PathVariable("id") long id) {
+        Category localCategory = categoryDao.findOne(id);
+        if(localCategory == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         categoryDao.delete(id);
+
+        return new ResponseEntity<>(localCategory, HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping("/get")
-    public Category get(long id) {
+    @RequestMapping(method = RequestMethod.GET, value = "/categories/{id}")
+    public ResponseEntity<Category> getOne(@PathVariable("id") long id) {
         Category category = categoryDao.findOne(id);
         if(category == null) {
             throw new NullPointerException("Category is not found by id:" + id);
         }
 
-        return category;
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
-    @RequestMapping("/getAll")
-    public List<Category> getAll() {
-        return categoryDao.findAll();
+    @RequestMapping(method = RequestMethod.GET, value = "/categories")
+    public ResponseEntity<List<Category>> getAll() {
+        List<Category> categoryList = categoryDao.findAll();
+        if (categoryList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(categoryList, HttpStatus.OK);
     }
 }
