@@ -9,9 +9,9 @@ import javax.persistence.Id;
 
 @Entity
 @Getter @Setter
-public class Category {
+public class Currency {
     @Id @GeneratedValue
     private int id;
     private String name;
-    private Long parentId;
+    private long value;
 }
