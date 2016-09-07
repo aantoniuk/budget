@@ -32,7 +32,6 @@ public class CategoryControllerTest {
     @Test
     public void findById_CategoryFound_ShouldReturnRightObjectBack() throws Exception {
         Category categoryForCheck = new CategoryBuilder().name("Drugs").description("For fun").id(17).parentId(177L).build();
-
         Mockito.when(serviceMock.findOne(17L)).thenReturn(categoryForCheck);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/categories/{id}", 17L).accept(MediaType.APPLICATION_JSON))
