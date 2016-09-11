@@ -1,13 +1,16 @@
 package com.budget.core.rest;
 
 import com.budget.core.entity.Category;
+import com.budget.core.exception.CategoryNotFoundException;
 import com.budget.core.response.Message;
-import com.budget.core.response.ResponseEntity;
+import com.budget.core.response.RestResponseEntity;
 import com.budget.core.response.Status;
 import com.budget.core.response.Statuses;
+import com.budget.core.response.enums.RestErrorCodes;
 import com.budget.core.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -25,67 +28,87 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    //@RequestMapping(method = RequestMethod.POST, value = "/categories")
     @RequestMapping(method = RequestMethod.POST)
-    public org.springframework.http.ResponseEntity create(@RequestBody Category category) {
-        Optional<Category> categoryOpt = categoryService.findByName(category.getName());
-        if (!categoryOpt.isPresent()) {
-            return new org.springframework.http.ResponseEntity(category, HttpStatus.CONFLICT);
+    public ResponseEntity<Category> create(@RequestBody Category category) {
+        if (categoryService.findByName(category.getName()).isPresent()) {
+            return new ResponseEntity<>(category, HttpStatus.CONFLICT);
         }
         Category categoryForResponse = categoryService.save(category);
 
-        return new org.springframework.http.ResponseEntity(categoryForResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryForResponse, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public org.springframework.http.ResponseEntity update(@PathVariable("id") Long id, @RequestBody Category category) {
-        Optional<Category> categoryOpt = categoryService.findOne(id);
-        if(!categoryOpt.isPresent()) {
-            return new org.springframework.http.ResponseEntity(HttpStatus.NOT_FOUND);
+    public ResponseEntity<RestResponseEntity> update(@PathVariable("id") Long id, @RequestBody Category category) throws CategoryNotFoundException{
+        // Category localCategory = categoryService.findOne(id);
+        Optional<Category> localCategory = categoryService.findOne(id);
+        if(!localCategory.isPresent()) {
+            Message restMessage = new Message(RestErrorCodes.RECAT02.name(), new String[] {Long.toString(id)},
+                    RestErrorCodes.RECAT02.getText());
+            Status restStatus = new Status(Statuses.WARNING.getText(), Arrays.asList(restMessage));
+            RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, localCategory);
+            return new ResponseEntity<>(restResponseEntity, HttpStatus.NOT_FOUND);
         }
-        Category localCategory = categoryOpt.get();
         if (category.getName() != null) {
-            localCategory.setName(category.getName());
+            // localCategory.setName(category.getName());
         }
-        // FIXME adjust by CategoryDTO and new Entity Category
-//        categoryOpt = categoryService.findOne(category.)
-//        localCategory.setParent(arentId(category.getParentId());
-        localCategory = categoryService.save(category);
+        // localCategory.setParentId(category.getParentId());
+        categoryService.save(category);
 
-        return new org.springframework.http.ResponseEntity(localCategory, HttpStatus.OK);
+        Message restMessage = new Message(null, new String[] {Long.toString(id)}, "Category with ID %1 has been successfully updated.");
+        Status restStatus = new Status(Statuses.SUCCESS.getText(), Arrays.asList(restMessage));
+        RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, category);
+        return new ResponseEntity<>(restResponseEntity, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public org.springframework.http.ResponseEntity remove(@PathVariable("id") long id) {
-        Optional<Category> categoryOpt = categoryService.findOne(id);
-        if(!categoryOpt.isPresent()) {
-            return new org.springframework.http.ResponseEntity(HttpStatus.NOT_FOUND);
+    public ResponseEntity<RestResponseEntity> remove(@PathVariable("id") long id) throws CategoryNotFoundException {
+        // Category localCategory = categoryService.findOne(id);
+        Optional<Category> localCategory = categoryService.findOne(id);
+        if (!localCategory.isPresent()) {
+            Message restMessage = new Message(RestErrorCodes.RECAT02.name(), new String[] {Long.toString(id)},
+                    RestErrorCodes.RECAT02.getText());
+            Status restStatus = new Status(Statuses.WARNING.getText(), Arrays.asList(restMessage));
+            RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, localCategory);
+            return new ResponseEntity<>(restResponseEntity, HttpStatus.NOT_FOUND);
         }
-        categoryService.delete(id);
 
-        return new org.springframework.http.ResponseEntity(categoryOpt.get(), HttpStatus.NO_CONTENT);
+        categoryService.delete(id);
+        Message restMessage = new Message();
+        Status restStatus = new Status(Statuses.SUCCESS.getText(), Arrays.asList(restMessage));
+        RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, localCategory);
+        return new ResponseEntity<>(restResponseEntity, HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public org.springframework.http.ResponseEntity getOne(@PathVariable("id") long id) {
-        Optional<Category> categoryOpt = categoryService.findOne(id);
-        if(!categoryOpt.isPresent()) {
-            throw new NullPointerException("Category is not found by id:" + id);
+    public ResponseEntity<RestResponseEntity> getOne(@PathVariable("id") long id) throws CategoryNotFoundException {
+        // Category category = categoryService.findOne(id);
+        Optional<Category> localCategory = categoryService.findOne(id);
+        if(!localCategory.isPresent()) {
+            Message restMessage = new Message(RestErrorCodes.RECAT02.name(), new String[] {Long.toString(id)},
+                    RestErrorCodes.RECAT02.getText());
+            Status restStatus = new Status(Statuses.WARNING.getText(), Arrays.asList(restMessage));
+            RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, localCategory.get());
+            return new ResponseEntity<>(restResponseEntity, HttpStatus.NOT_FOUND);
         }
-        Message message = new Message();
-        Status status = new Status(Statuses.SUCCESS.getText(), Arrays.asList(message));
-        ResponseEntity responseEntity = new ResponseEntity(status, categoryOpt.get());
-        return new org.springframework.http.ResponseEntity(responseEntity, HttpStatus.OK);
+        Message restMessage = new Message();
+        Status restStatus = new Status(Statuses.SUCCESS.getText(), Arrays.asList(restMessage));
+        RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, localCategory.get());
+        return new ResponseEntity<>(restResponseEntity, HttpStatus.OK);
     }
 
-    // @RequestMapping(method = RequestMethod.GET, value = "/categories")
     @RequestMapping(method = RequestMethod.GET)
-    public org.springframework.http.ResponseEntity getAll() {
+    public ResponseEntity<RestResponseEntity> getAll() {
         List<Category> categoryList = categoryService.findAll();
         if (categoryList.isEmpty()) {
-            return new org.springframework.http.ResponseEntity(HttpStatus.NOT_FOUND);
+            Message restMessage = new Message(RestErrorCodes.RECAT01.name(), null, RestErrorCodes.RECAT01.getText());
+            Status restStatus = new Status(Statuses.WARNING.getText(), Arrays.asList(restMessage));
+            RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, categoryList);
+            return new ResponseEntity<>(restResponseEntity, HttpStatus.NOT_FOUND);
         }
-
-        return new org.springframework.http.ResponseEntity(categoryList, HttpStatus.OK);
+        Message restMessage = new Message();
+        Status restStatus = new Status(Statuses.SUCCESS.getText(), Arrays.asList(restMessage));
+        RestResponseEntity restResponseEntity = new RestResponseEntity(restStatus, categoryList);
+        return new ResponseEntity<>(restResponseEntity, HttpStatus.OK);
     }
 }

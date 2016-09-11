@@ -1,5 +1,6 @@
 package com.budget.core.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import lombok.Setter;
  * -----------------------------------------------------
  * Created by kremezniy on 9/7/2016.
  */
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Message {
     private String msgCode;
     private String[] msgValues;
