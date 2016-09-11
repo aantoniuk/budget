@@ -20,13 +20,8 @@ public class CategoryBuilder {
         return this;
     }
 
-    public CategoryBuilder description(String description) {
-        category.setDescription(description);
-        return this;
-    }
-
-    public CategoryBuilder parentId(Long id) {
-        category.setParentId(id);
+    public CategoryBuilder parent(Category category) {
+        category.setParent(category);
         return this;
     }
 

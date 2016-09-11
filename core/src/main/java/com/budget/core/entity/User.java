@@ -9,9 +9,10 @@ import javax.persistence.Id;
 
 @Entity
 @Getter @Setter
-public class Currency {
+public class User {
     @Id @GeneratedValue
-    private long id;
-    private String name;
-    private long value;
+    private int id;
+    private String login;
+    private String password;
+    private boolean enable;
 }

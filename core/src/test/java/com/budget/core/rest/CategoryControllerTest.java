@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Optional;
+
 /**
  * Created by tolik on 8/21/2016.
  */
@@ -31,19 +33,19 @@ public class CategoryControllerTest {
 
     @Test
     public void findById_CategoryFound_ShouldReturnRightObjectBack() throws Exception {
-        Category categoryForCheck = new CategoryBuilder().name("Drugs").description("For fun").id(17).parentId(177L).build();
-        Mockito.when(serviceMock.findOne(17L)).thenReturn(categoryForCheck);
+        Category parentCategory = new Category();
+        Category categoryForCheck = new CategoryBuilder().name("Drugs").id(17).parent(parentCategory).build();
+        Mockito.when(serviceMock.findOne(17L)).thenReturn(Optional.ofNullable(categoryForCheck));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/categories/{id}", 17L).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.restStatusObject.restStatus", Matchers.is("SUCCESS")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.restStatusObject.restMessageList[0].msgCode", Matchers.isEmptyOrNullString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.restStatusObject.restMessageList[0].msgValues", Matchers.isEmptyOrNullString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.restStatusObject.restMessageList[0].msgText", Matchers.isEmptyOrNullString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusObject.restStatus", Matchers.is("SUCCESS")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusObject.messageList[0].msgCode", Matchers.isEmptyOrNullString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusObject.messageList[0].msgValues", Matchers.isEmptyOrNullString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusObject.messageList[0].msgText", Matchers.isEmptyOrNullString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.restObject.id", Matchers.is(17)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.restObject.name", Matchers.is("Drugs")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.restObject.parentId", Matchers.is(177)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.restObject.description", Matchers.is("For fun")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.restObject.parent", Matchers.is(parentCategory)));
     }
 
     @Before

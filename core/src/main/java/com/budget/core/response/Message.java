@@ -1,4 +1,4 @@
-package com.budget.core.entity;
+package com.budget.core.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.Setter;
  * Created by kremezniy on 9/7/2016.
  */
 @Getter @Setter @NoArgsConstructor
-public class RestMessage {
+public class Message {
     private String msgCode;
     private String[] msgValues;
     private String msgText;

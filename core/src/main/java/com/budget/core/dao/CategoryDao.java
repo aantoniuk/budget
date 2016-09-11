@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryDao extends JpaRepository<Category, Long> {
 
-    boolean findByName(String name);
+    Category findByName(String name);
 }
