@@ -6,12 +6,16 @@ import lombok.Setter;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 @Getter @Setter
-public class Currency {
+public class UserCurrency {
     @Id @GeneratedValue
     private long id;
-    private String name;
-    private long value;
+    private boolean enable = false;
+    @ManyToOne
+    private User user;
+    @ManyToOne
+    private Currency currency;
 }

@@ -1,4 +1,4 @@
-package com.budget.core.entity;
+package com.budget.core.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by kremezniy on 9/7/2016.
  */
 @Getter @Setter @AllArgsConstructor
-public class RestStatus {
+public class Status {
     String restStatus;
-    List<RestMessage> restMessageList;
+    List<Message> messageList;
 }

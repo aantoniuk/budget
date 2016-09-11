@@ -1,4 +1,4 @@
-package com.budget.core.entity.enums;
+package com.budget.core.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Getter;
  * Created by kremezniy on 9/7/2016.
  */
 @Getter @AllArgsConstructor
-public enum RestStatuses {
+public enum Statuses {
     SUCCESS("SUCCESS"),
     ERROR("ERROR"),
     WARNING("WARNING");

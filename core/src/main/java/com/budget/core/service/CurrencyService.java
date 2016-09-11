@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by tolik on 9/4/2016.
- */
 @Service
 public class CurrencyService {
 
