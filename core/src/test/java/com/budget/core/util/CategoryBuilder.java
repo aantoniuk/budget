@@ -15,13 +15,8 @@ public class CategoryBuilder {
         category = new Category();
     }
 
-    public CategoryBuilder id(int id) {
+    public CategoryBuilder id(long id) {
         category.setId(id);
-        return this;
-    }
-
-    public CategoryBuilder parent(Category category) {
-        category.setParent(category);
         return this;
     }
 
