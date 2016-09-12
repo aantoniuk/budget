@@ -40,5 +40,4 @@ public class CategoryService {
     public void delete(Long id) {
         categoryDao.delete(id);
     }
-
 }
