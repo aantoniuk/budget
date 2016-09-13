@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CurrencyService {
@@ -21,7 +22,19 @@ public class CurrencyService {
         return currencyDao.save(currency);
     }
 
+    public Optional<Currency> findOne(Long id) {
+        return Optional.ofNullable(currencyDao.findOne(id));
+    }
+
     public List<Currency> findAll() {
         return currencyDao.findAll();
+    }
+
+    public void delete(Long id) {
+        currencyDao.delete(id);
+    }
+
+    public Optional<Currency> findByName(String name) {
+        return Optional.ofNullable(currencyDao.findByName(name));
     }
 }
