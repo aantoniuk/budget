@@ -30,6 +30,7 @@ import java.util.Optional;
 public class CategoryControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     private CategoryService serviceMock;
 
@@ -135,7 +136,7 @@ public class CategoryControllerTest {
     public void updateById_CategoriesNotFound_ShouldReturnRightResponseException() throws Exception {
         Mockito.when(serviceMock.findOne(CATEGORY_ID_LONG)).thenReturn(categoryOptionalNull);
         Gson gson = new Gson();
-        String jsonString = gson.toJson(categoryOptionalNotNullOne);
+        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
 
         mockMvc.perform(MockMvcRequestBuilders.put("/categories/{id}", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON).content(jsonString))

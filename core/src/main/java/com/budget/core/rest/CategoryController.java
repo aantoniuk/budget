@@ -37,7 +37,7 @@ public class CategoryController {
     public ResponseEntity<Category> update(@PathVariable("id") Long id, @RequestBody Category category) throws ObjectNotFoundException {
         Optional<Category> localCategory = categoryService.findOne(id);
         if(!localCategory.isPresent()) {
-            throw new ObjectNotFoundException("REST Controller: Object Category with id " + id +" has not been found for DELETION.");
+            throw new ObjectNotFoundException("REST Controller: Object Category with id " + id +" has not been found for UPDATE.");
         }
         if (category.getName() != null) {
             localCategory.get().setName(category.getName());
