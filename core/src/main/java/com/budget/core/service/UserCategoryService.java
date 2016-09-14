@@ -19,4 +19,8 @@ public class UserCategoryService {
         return userCategoryDao.save(userCategory);
     }
 
+    public void delete(UserCategory userCategory) {
+        userCategoryDao.delete(userCategory);
+    }
+
 }

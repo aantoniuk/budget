@@ -11,7 +11,7 @@ import javax.persistence.Id;
 @Getter @Setter
 public class User {
     @Id @GeneratedValue
-    private int id;
+    private long id;
     private String login;
     private String password;
     private boolean enable;

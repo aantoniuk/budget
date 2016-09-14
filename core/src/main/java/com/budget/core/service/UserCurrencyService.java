@@ -24,4 +24,8 @@ public class UserCurrencyService {
     public UserCurrency save(UserCurrency userCurrency) {
         return userCurrencyDao.save(userCurrency);
     }
+
+    public void delete(UserCurrency userCurrency) {
+        userCurrencyDao.delete(userCurrency);
+    }
 }
