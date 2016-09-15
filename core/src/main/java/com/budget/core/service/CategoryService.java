@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by tolik on 9/4/2016.
- */
 @Service
 public class CategoryService {
 
@@ -33,7 +30,21 @@ public class CategoryService {
         return categoryDao.findAll();
     }
 
-    public Category save(Category category) {
+    public Category create(Category category) {
+        Long parentId = null;
+        if(category.getParent() != null) {
+            parentId = category.getParent().getId();
+        }
+        if(categoryDao.findByNameAndParentId(category.getName(), parentId).isPresent()) {
+            throw new IllegalArgumentException("Object already exists");
+        }
+        return categoryDao.save(category);
+    }
+
+    public Category update(Category category) {
+        if(!findOne(category.getId()).isPresent()) {
+            throw new NullPointerException("Object doesn't exist");
+        }
         return categoryDao.save(category);
     }
 

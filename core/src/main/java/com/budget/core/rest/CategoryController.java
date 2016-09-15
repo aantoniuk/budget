@@ -23,27 +23,16 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Category> create(@RequestBody Category category) throws ObjectAlreadyExists {
-        Optional<Category> localCategory = categoryService.findByName(category.getName());
-        if (localCategory.isPresent()) {
-            throw new ObjectAlreadyExists("REST Controller: Object Category with id " + localCategory.get().getId() +" is already exist.");
-        }
-        Category categoryForResponse = categoryService.save(category);
-        return new ResponseEntity<>(category, HttpStatus.CREATED);
+    @RequestMapping(path = "/create", method = RequestMethod.POST)
+    public ResponseEntity<Category> create(@RequestBody Category category) {
+        Category createdCategory = categoryService.create(category);
+        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public ResponseEntity<Category> update(@PathVariable("id") Long id, @RequestBody Category category) throws ObjectNotFoundException {
-        Optional<Category> localCategory = categoryService.findOne(id);
-        if(!localCategory.isPresent()) {
-            throw new ObjectNotFoundException("REST Controller: Object Category with id " + id +" has not been found for UPDATE.");
-        }
-        if (category.getName() != null) {
-            localCategory.get().setName(category.getName());
-        }
-        categoryService.save(category);
-        return new ResponseEntity<>(localCategory.get(), HttpStatus.OK);
+    @RequestMapping(path = "/update", method = RequestMethod.PUT)
+    public ResponseEntity<Category> update(@RequestBody Category category) {
+        Category savedCategory = categoryService.update(category);
+        return new ResponseEntity<>(savedCategory, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")

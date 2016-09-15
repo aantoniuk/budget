@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
-/**
- * Created by tolik on 8/21/2016.
- */
 @RunWith(SpringRunner.class)
 @WebMvcTest(CategoryController.class)
 public class CategoryControllerTest {
@@ -36,7 +33,7 @@ public class CategoryControllerTest {
 
     private final static Long CATEGORY_ID_LONG = 17L;
 
-    Optional<Category> categoryOptionalNotNullOne, categoryOptionalNotNullTwo, categoryOptionalNull;
+    private Optional<Category> categoryOptionalNotNullOne, categoryOptionalNotNullTwo, categoryOptionalNull;
 
     @Test
     public void findById_CategoryFound_ShouldReturnRightResponseEntity() throws Exception {
@@ -121,14 +118,14 @@ public class CategoryControllerTest {
         Gson gson = new Gson();
         String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/categories/{id}", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON)
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON).content(jsonString))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findOne(CATEGORY_ID_LONG);
-        Mockito.verify(serviceMock, Mockito.times(1)).save(org.mockito.Matchers.refEq(categoryOptionalNotNullOne.get()));
+        Mockito.verify(serviceMock, Mockito.times(1)).update(org.mockito.Matchers.refEq(categoryOptionalNotNullOne.get()));
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
@@ -138,7 +135,7 @@ public class CategoryControllerTest {
         Gson gson = new Gson();
         String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/categories/{id}", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON)
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON).content(jsonString))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
@@ -152,14 +149,14 @@ public class CategoryControllerTest {
         Gson gson = new Gson();
         String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/categories").accept(MediaType.APPLICATION_JSON)
+        mockMvc.perform(MockMvcRequestBuilders.post("/categories/create").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON).content(jsonString))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findByName(categoryOptionalNotNullOne.get().getName());
-        Mockito.verify(serviceMock, Mockito.times(1)).save(org.mockito.Matchers.refEq(categoryOptionalNotNullOne.get()));
+        Mockito.verify(serviceMock, Mockito.times(1)).create(org.mockito.Matchers.refEq(categoryOptionalNotNullOne.get()));
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
@@ -169,7 +166,7 @@ public class CategoryControllerTest {
         Gson gson = new Gson();
         String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/categories").accept(MediaType.APPLICATION_JSON)
+        mockMvc.perform(MockMvcRequestBuilders.post("/categories/create").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON).content(jsonString))
                 .andExpect(MockMvcResultMatchers.status().isConflict());
 

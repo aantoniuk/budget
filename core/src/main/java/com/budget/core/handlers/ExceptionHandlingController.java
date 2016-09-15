@@ -19,7 +19,15 @@ public class ExceptionHandlingController {
     @ExceptionHandler(ObjectNotFoundException.class)
     public void objectNotFound() {}
 
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NullPointerException.class)
+    public void nullPointerException() {}
+
     @ResponseStatus(value = HttpStatus.CONFLICT, reason = "HandlerController: Object is already exists.")
     @ExceptionHandler(ObjectAlreadyExists.class)
     public void objectAlreadyExists() {}
+
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public void illegalArgumentException() {}
 }
