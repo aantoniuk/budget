@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Created by kremezniy on 9/8/2016.
  */
 @ResponseStatus(value= HttpStatus.NOT_FOUND, reason="Exception class: There is no such object")
-public class ObjectNotFoundException extends Exception {
+public class ObjectNotFoundException extends RuntimeException {
     public ObjectNotFoundException(String message) {
         super(message);
     }

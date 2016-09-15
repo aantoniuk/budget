@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Created by kremezniy on 9/8/2016.
  */
 @ResponseStatus(value= HttpStatus.CONFLICT, reason="Exception class: Object is already exist")
-public class ObjectAlreadyExists extends Exception {
+public class ObjectAlreadyExists extends RuntimeException {
     public ObjectAlreadyExists(String message) {
         super(message);
     }
