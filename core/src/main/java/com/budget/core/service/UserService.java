@@ -66,7 +66,7 @@ public class UserService {
     }
 
     private void deleteUserCategories(User user) {
-        categoryService.findAll().stream().
+        categoryService.findAll().
                 filter(item -> item.getParent() == null).
                 forEach(item -> deleteUserCategory(user, item, null));
     }
@@ -119,7 +119,7 @@ public class UserService {
     }
 
     private void createUserCategories(User user) {
-        categoryService.findAll().stream().
+        categoryService.findAll().
                 filter(item -> item.getParent() == null).
                 forEach(item -> createUserCategory(user, item, null));
     }

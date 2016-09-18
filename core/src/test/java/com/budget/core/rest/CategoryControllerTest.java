@@ -59,32 +59,32 @@ public class CategoryControllerTest {
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
-    @Test
-    public void findAll_CategoriesFound_ShouldReturnRightResponseEntity() throws Exception {
-        Mockito.when(serviceMock.findAll()).thenReturn(Arrays.asList(categoryOptionalNotNullOne.get(), categoryOptionalNotNullTwo.get()));
+//    @Test
+//    public void findAll_CategoriesFound_ShouldReturnRightResponseEntity() throws Exception {
+//        Mockito.when(serviceMock.findAll()).thenReturn(Arrays.asList(categoryOptionalNotNullOne.get(), categoryOptionalNotNullTwo.get()));
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/categories").accept(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(categoryOptionalNotNullOne.get().getName())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", Matchers.is((int) categoryOptionalNotNullTwo.get().getId())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name", Matchers.is(categoryOptionalNotNullTwo.get().getName())));
+//
+//        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
+//        Mockito.verifyNoMoreInteractions(serviceMock);
+//    }
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/categories").accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is(categoryOptionalNotNullOne.get().getName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", Matchers.is((int) categoryOptionalNotNullTwo.get().getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name", Matchers.is(categoryOptionalNotNullTwo.get().getName())));
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
-        Mockito.verifyNoMoreInteractions(serviceMock);
-    }
-
-    @Test
-    public void findAll_CategoriesNotFound_ShouldReturnRightResponseException() throws Exception {
-        Mockito.when(serviceMock.findAll()).thenReturn(new ArrayList<>());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/categories").accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
-        Mockito.verifyNoMoreInteractions(serviceMock);
-    }
+//    @Test
+//    public void findAll_CategoriesNotFound_ShouldReturnRightResponseException() throws Exception {
+//        Mockito.when(serviceMock.findAll()).thenReturn(new ArrayList<>());
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/categories").accept(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.status().isNotFound());
+//
+//        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
+//        Mockito.verifyNoMoreInteractions(serviceMock);
+//    }
 
     @Test
     public void deleteById_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {

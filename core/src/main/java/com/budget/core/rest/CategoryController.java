@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+//@RestController
 @RequestMapping("/categories")
 public class CategoryController {
 
@@ -54,12 +54,12 @@ public class CategoryController {
         return new ResponseEntity<>(localCategory.get(), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Category>> getAll() throws ObjectNotFoundException {
-        List<Category> categoryList = categoryService.findAll();
-        if (categoryList.isEmpty()) {
-            throw new ObjectNotFoundException("REST Controller: All Category Objects have not been found.");
-        }
-        return new ResponseEntity<>(categoryList, HttpStatus.OK);
-    }
+//    @RequestMapping(method = RequestMethod.GET)
+//    public ResponseEntity<List<Category>> getAll() throws ObjectNotFoundException {
+//        List<Category> categoryList = categoryService.findAll();
+//        if (categoryList.isEmpty()) {
+//            throw new ObjectNotFoundException("REST Controller: All Category Objects have not been found.");
+//        }
+//        return new ResponseEntity<>(categoryList, HttpStatus.OK);
+//    }
 }
