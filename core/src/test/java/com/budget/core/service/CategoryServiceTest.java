@@ -2,7 +2,6 @@ package com.budget.core.service;
 
 import com.budget.core.Utils.OperationType;
 import com.budget.core.entity.Category;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,9 +17,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -34,17 +31,14 @@ public class CategoryServiceTest {
     public static Category category;
 
     @Before
-    public void setUp() throws Exception {
-        category = new Category();
-        category.setName("CategoryServiceTest");
-        category.setType(OperationType.CREDIT);
+    public void setUp() {
+        //if(category == null) {
+            category = new Category();
+            category.setName("CategoryServiceTest");
+            category.setType(OperationType.CREDIT);
 
-        category = categoryService.create(category);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        categoryService.delete(category.getId());
+            category = categoryService.create(category);
+        //}
     }
 
     @Test
@@ -74,19 +68,19 @@ public class CategoryServiceTest {
     @Test
     public void findByType() throws Exception {
         Stream<Category> categories = categoryService.findByType(category.getType());
-        assertTrue(categories.anyMatch(item -> category.getId() == item.getId()));
+        assertThat(categories.findFirst().get(), equalTo(category));
     }
 
     @Test
     public void findByType_notExists() throws Exception {
         OperationType type;
-        if(category.getType().equals(OperationType.CREDIT)) {
+        if (category.getType().equals(OperationType.CREDIT)) {
             type = OperationType.DEBIT;
         } else {
             type = OperationType.CREDIT;
         }
         Stream<Category> categories = categoryService.findByType(type);
-        assertFalse(categories.anyMatch(item -> category.getId() == item.getId()));
+        assertThat(categories.findFirst().isPresent(), is(false));
     }
 
     @Test
@@ -98,7 +92,6 @@ public class CategoryServiceTest {
     @Test
     @Ignore
     public void create() throws Exception {
-
     }
 
     @Test
@@ -112,5 +105,4 @@ public class CategoryServiceTest {
     public void delete() throws Exception {
 
     }
-
 }

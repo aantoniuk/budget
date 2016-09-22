@@ -62,7 +62,7 @@ public class CategoryService {
             parentId = category.getParent().getId();
         }
         if(categoryDao.findByNameAndTypeAndParentId(category.getName(), category.getType(), parentId).isPresent()) {
-            String exMsg = String.format("Object already exists with name=%s, type=$s", category.getName(), category.getType());
+            String exMsg = String.format("Object already exists with name=%s, type=$s", category.getName(), category.getType().name());
             throw new IllegalArgumentException(exMsg);
         }
     }
