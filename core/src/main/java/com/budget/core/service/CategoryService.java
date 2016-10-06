@@ -23,16 +23,12 @@ public class CategoryService {
         return categoryDao.findOne(id);
     }
 
-    public Optional<Category> findByName(String name) {
-        return categoryDao.findByName(name);
-    }
-
     public Stream<Category> findByType(OperationType type) {
         return categoryDao.findByType(type);
     }
 
-    public Stream<Category> fingByParent(Category parent) {
-        return categoryDao.findByParent(parent.getId());
+    public Stream<Category> findByParentId(Long parentId) {
+        return categoryDao.findByParentId(parentId);
     }
 
     public Stream<Category> findAll() {

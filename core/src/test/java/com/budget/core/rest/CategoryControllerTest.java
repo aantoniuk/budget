@@ -141,36 +141,36 @@ public class CategoryControllerTest {
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
-    @Test
-    public void createByName_CategoryIsNotFound_ShouldReturnRightResponseEntity() throws Exception {
-        Mockito.when(serviceMock.findByName(categoryOptionalNotNullOne.get().getName())).thenReturn(categoryOptionalNull);
-        Gson gson = new Gson();
-        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/categories/create").accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON).content(jsonString))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findByName(categoryOptionalNotNullOne.get().getName());
-        Mockito.verify(serviceMock, Mockito.times(1)).create(org.mockito.Matchers.refEq(categoryOptionalNotNullOne.get()));
-        Mockito.verifyNoMoreInteractions(serviceMock);
-    }
-
-    @Test
-    public void createByName_CategoriesFound_ShouldReturnRightResponseException() throws Exception {
-        Mockito.when(serviceMock.findByName(categoryOptionalNotNullOne.get().getName())).thenReturn(categoryOptionalNotNullOne);
-        Gson gson = new Gson();
-        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/categories/create").accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON).content(jsonString))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findByName(categoryOptionalNotNullOne.get().getName());
-        Mockito.verifyNoMoreInteractions(serviceMock);
-    }
+//    @Test
+//    public void createByName_CategoryIsNotFound_ShouldReturnRightResponseEntity() throws Exception {
+//        Mockito.when(serviceMock.findByName(categoryOptionalNotNullOne.get().getName())).thenReturn(categoryOptionalNull);
+//        Gson gson = new Gson();
+//        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
+//
+//        mockMvc.perform(MockMvcRequestBuilders.post("/categories/create").accept(MediaType.APPLICATION_JSON)
+//                .contentType(MediaType.APPLICATION_JSON).content(jsonString))
+//                .andExpect(MockMvcResultMatchers.status().isCreated())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
+//
+//        Mockito.verify(serviceMock, Mockito.times(1)).findByName(categoryOptionalNotNullOne.get().getName());
+//        Mockito.verify(serviceMock, Mockito.times(1)).create(org.mockito.Matchers.refEq(categoryOptionalNotNullOne.get()));
+//        Mockito.verifyNoMoreInteractions(serviceMock);
+//    }
+//
+//    @Test
+//    public void createByName_CategoriesFound_ShouldReturnRightResponseException() throws Exception {
+//        Mockito.when(serviceMock.findByName(categoryOptionalNotNullOne.get().getName())).thenReturn(categoryOptionalNotNullOne);
+//        Gson gson = new Gson();
+//        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
+//
+//        mockMvc.perform(MockMvcRequestBuilders.post("/categories/create").accept(MediaType.APPLICATION_JSON)
+//                .contentType(MediaType.APPLICATION_JSON).content(jsonString))
+//                .andExpect(MockMvcResultMatchers.status().isConflict());
+//
+//        Mockito.verify(serviceMock, Mockito.times(1)).findByName(categoryOptionalNotNullOne.get().getName());
+//        Mockito.verifyNoMoreInteractions(serviceMock);
+//    }
 
     @Before
     public void setUp() throws Exception {

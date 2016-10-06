@@ -17,7 +17,7 @@ public class Category {
     private String name;
     @Enumerated(EnumType.STRING)
     private OperationType type;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Category parent;
     @OneToMany(mappedBy = "parent")
     private Set<Category> children;

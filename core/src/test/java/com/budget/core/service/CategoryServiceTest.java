@@ -13,9 +13,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -41,31 +43,22 @@ class CategoryServiceTest {
     @Test
     public void findOne() throws Exception {
         Optional<Category> expectedCategory = categoryService.findOne(category.getId());
-        assertThat(expectedCategory.isPresent(), is(true));
-        assertThat(expectedCategory.get(), equalTo(category));
+        assertAll(
+                () -> assertTrue(expectedCategory.isPresent()),
+                () -> assertEquals(expectedCategory.get(), category));
     }
 
     @Test
     public void findOne_notExists() throws Exception {
-        assertThat(categoryService.findOne(Long.MAX_VALUE).isPresent(), is(false));
-    }
-
-    @Test
-    public void findByName() throws Exception {
-        Optional<Category> expectedCategory = categoryService.findByName(category.getName());
-        assertThat(expectedCategory.isPresent(), is(true));
-        assertThat(expectedCategory.get(), equalTo(category));
-    }
-
-    @Test
-    public void findByName_notExists() throws Exception {
-        assertThat(categoryService.findByName("abracadabra").isPresent(), is(false));
+        assertFalse(categoryService.findOne(Long.MAX_VALUE).isPresent());
     }
 
     @Test
     public void findByType() throws Exception {
         Stream<Category> categories = categoryService.findByType(category.getType());
-        assertThat(categories.findFirst().get(), equalTo(category));
+        assertAll(
+                () -> assertNotNull(categories),
+                () -> assertEquals(categories.findFirst().get(), category));
     }
 
     @Test
@@ -77,12 +70,42 @@ class CategoryServiceTest {
             type = OperationType.CREDIT;
         }
         Stream<Category> categories = categoryService.findByType(type);
-        assertThat(categories.findFirst().isPresent(), is(false));
+        assertFalse(categories.findFirst().isPresent());
     }
 
     @Test
-    public void findByParent() throws Exception {
+    public void findByParent_withNullValue() throws Exception {
+        Stream<Category> categories = categoryService.findByParentId(null);
+        assertAll(
+                () -> assertNotNull(categories),
+                () -> assertEquals(categories.findFirst().get(), category));
+    }
 
+    @Test
+    public void findByParent_withNullValue_multipleResult() throws Exception {
+        Category secondCategory = new Category();
+        secondCategory.setName("second");
+        secondCategory.setType(OperationType.CREDIT);
+        categoryService.create(secondCategory);
+
+        Stream<Category> categories = categoryService.findByParentId(null);
+        assertAll(
+                () -> assertNotNull(categories),
+                () -> assertEquals(categories.count(), 2));
+    }
+
+    @Test
+    public void findByParent_withNotNullValue() throws Exception {
+        Category childCategory = new Category();
+        childCategory.setName("second");
+        childCategory.setType(OperationType.CREDIT);
+        childCategory.setParent(category);
+        categoryService.create(childCategory);
+
+        Stream<Category> categories = categoryService.findByParentId(category.getId());
+        assertAll(
+                () -> assertNotNull(categories),
+                () -> assertEquals(categories.findFirst().get(), childCategory));
     }
 
     @Test

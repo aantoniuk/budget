@@ -13,11 +13,9 @@ public interface CategoryDao extends Repository<Category, Long> {
 
     Optional<Category> findOne(Long id);
 
-    Optional<Category> findByName(String name);
-
     Stream<Category> findByType(OperationType type);
 
-    Stream<Category> findByParent(Long parent);
+    Stream<Category> findByParentId(Long parent);
 
     Optional<Category> findByNameAndTypeAndParentId(String name, OperationType type, Long parentId);
 
