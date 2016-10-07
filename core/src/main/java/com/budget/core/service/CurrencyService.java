@@ -29,6 +29,9 @@ public class CurrencyService {
     }
 
     public Currency create(Currency currency) {
+        if(findByName(currency.getName()).findFirst().isPresent()) {
+            throw new IllegalArgumentException("Object already exists");
+        }
         return currencyDao.save(currency);
     }
 
@@ -37,6 +40,9 @@ public class CurrencyService {
     }
 
     public void delete(Long id) {
+        if(!findOne(id).isPresent()) {
+            throw new NullPointerException("Object doesn't exist");
+        }
         currencyDao.delete(id);
     }
 
