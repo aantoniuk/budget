@@ -3,7 +3,7 @@ package com.budget.core.service;
 import com.budget.core.Utils.OperationType;
 import com.budget.core.entity.Category;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import org.junit.jupiter.api.AfterEach;
+import com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +14,15 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertDeleteCount;
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertInsertCount;
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertSelectCount;
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertUpdateCount;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,8 +36,9 @@ import static org.junit.jupiter.api.Assertions.expectThrows;
 @TestExecutionListeners({
         TransactionalTestExecutionListener.class,
         DependencyInjectionTestExecutionListener.class,
-        DbUnitTestExecutionListener.class,
+        DbUnitTestExecutionListener.class
 })
+@Transactional
 class CategoryServiceTest {
 
     @Autowired
@@ -42,21 +48,23 @@ class CategoryServiceTest {
 
     @BeforeEach
     public void init() {
-        if(category == null) {
+//        if(category == null) {
             category = new Category();
             category.setName("CategoryServiceTest");
             category.setType(OperationType.CREDIT);
 
             category = categoryService.create(category);
-        }
+//        }
+        AssertSqlCount.reset();
     }
 
-    @AfterEach
-    public void destroy() {
-        if(category != null) {
-            categoryService.delete(category.getId());
-        }
-    }
+//    @AfterEach
+//    @Sql(value = )
+//    public void destroy() {
+//        if(category != null) {
+//            categoryService.delete(category.getId());
+//        }
+//    }
 
     @Test
     public void findOne() throws Exception {
@@ -65,6 +73,7 @@ class CategoryServiceTest {
                 () -> assertTrue(expectedCategory.isPresent()),
                 () -> assertEquals(expectedCategory.get(), category)
         );
+        assertSelectCount(1);
     }
 
     @Test
@@ -79,6 +88,7 @@ class CategoryServiceTest {
                 () -> assertNotNull(categories),
                 () -> assertEquals(categories.findFirst().get(), category)
         );
+        assertSelectCount(1);
     }
 
     @Test
@@ -100,6 +110,7 @@ class CategoryServiceTest {
                 () -> assertNotNull(categories),
                 () -> assertEquals(categories.findFirst().get(), category)
         );
+        assertSelectCount(1);
     }
 
     @Test
@@ -136,17 +147,25 @@ class CategoryServiceTest {
 
     @Test
     public void create() throws Exception {
+        AssertSqlCount.reset();
+
         Category newCategory = new Category();
         newCategory.setName("newCategory");
         newCategory.setType(OperationType.CREDIT);
         categoryService.create(newCategory);
+
+        assertSelectCount(1);
+        assertInsertCount(1);
+        assertUpdateCount(0);
+        assertDeleteCount(0);
 
         Optional<Category> expectedCategory = categoryService.findOne(newCategory.getId());
         assertAll(
                 () -> assertTrue(expectedCategory.isPresent()),
                 () -> assertEquals(expectedCategory.get(), newCategory)
         );
-        categoryService.delete(newCategory.getId());
+//
+//        categoryService.delete(newCategory.getId());
     }
 
     @Test
