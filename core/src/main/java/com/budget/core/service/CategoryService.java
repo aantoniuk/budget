@@ -49,6 +49,12 @@ public class CategoryService {
     }
 
     public void delete(Long id) {
+        if(id == null) {
+            throw new NullPointerException("Id cannot be null");
+        }
+        if(!findOne(id).isPresent()) {
+            throw new NullPointerException("Object doesn't exist");
+        }
         categoryDao.delete(id);
     }
 

@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.expectThrows;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -45,7 +46,8 @@ class CategoryServiceTest {
         Optional<Category> expectedCategory = categoryService.findOne(category.getId());
         assertAll(
                 () -> assertTrue(expectedCategory.isPresent()),
-                () -> assertEquals(expectedCategory.get(), category));
+                () -> assertEquals(expectedCategory.get(), category)
+        );
     }
 
     @Test
@@ -58,7 +60,8 @@ class CategoryServiceTest {
         Stream<Category> categories = categoryService.findByType(category.getType());
         assertAll(
                 () -> assertNotNull(categories),
-                () -> assertEquals(categories.findFirst().get(), category));
+                () -> assertEquals(categories.findFirst().get(), category)
+        );
     }
 
     @Test
@@ -78,7 +81,8 @@ class CategoryServiceTest {
         Stream<Category> categories = categoryService.findByParentId(null);
         assertAll(
                 () -> assertNotNull(categories),
-                () -> assertEquals(categories.findFirst().get(), category));
+                () -> assertEquals(categories.findFirst().get(), category)
+        );
     }
 
     @Test
@@ -91,13 +95,16 @@ class CategoryServiceTest {
         Stream<Category> categories = categoryService.findByParentId(null);
         assertAll(
                 () -> assertNotNull(categories),
-                () -> assertEquals(categories.count(), 2));
+                () -> assertEquals(categories.count(), 2)
+        );
+
+        categoryService.delete(secondCategory.getId());
     }
 
     @Test
     public void findByParent_withNotNullValue() throws Exception {
         Category childCategory = new Category();
-        childCategory.setName("second");
+        childCategory.setName("childCategory");
         childCategory.setType(OperationType.CREDIT);
         childCategory.setParent(category);
         categoryService.create(childCategory);
@@ -105,20 +112,82 @@ class CategoryServiceTest {
         Stream<Category> categories = categoryService.findByParentId(category.getId());
         assertAll(
                 () -> assertNotNull(categories),
-                () -> assertEquals(categories.findFirst().get(), childCategory));
+                () -> assertEquals(categories.findFirst().get(), childCategory)
+        );
+        categoryService.delete(childCategory.getId());
     }
 
     @Test
     public void create() throws Exception {
+        Category newCategory = new Category();
+        newCategory.setName("newCategory");
+        newCategory.setType(OperationType.CREDIT);
+        categoryService.create(newCategory);
+
+        Optional<Category> expectedCategory = categoryService.findOne(newCategory.getId());
+        assertAll(
+                () -> assertTrue(expectedCategory.isPresent()),
+                () -> assertEquals(expectedCategory.get(), newCategory)
+        );
+        categoryService.delete(newCategory.getId());
+    }
+
+    @Test
+    public void create_duplicateCategory() throws Exception {
+        Throwable exception = expectThrows(IllegalArgumentException.class, () -> categoryService.create(category));
+
+        assertNotNull(exception);
     }
 
     @Test
     public void update() throws Exception {
+        String categoryName = "updateCategory";
+        category.setName(categoryName);
+        categoryService.update(category);
 
+        Optional<Category> expectedCategory = categoryService.findOne(category.getId());
+
+        assertAll(
+                () -> assertTrue(expectedCategory.isPresent()),
+                () -> assertEquals(expectedCategory.get(), category)
+        );
+    }
+
+    @Test
+    public void update_withEmptyId() throws Exception {
+        Category newCategory = new Category();
+        Throwable exception = expectThrows(NullPointerException.class, () -> categoryService.update(newCategory));
+
+        assertNotNull(exception);
     }
 
     @Test
     public void delete() throws Exception {
+        categoryService.delete(category.getId());
 
+        Optional<Category> deletedCategory = categoryService.findOne(category.getId());
+
+        assertFalse(deletedCategory.isPresent());
+        category = null;
+    }
+
+    @Test
+    public void delete_byNullValue() throws Exception {
+        Throwable exception = expectThrows(NullPointerException.class, () -> categoryService.delete(null));
+
+        assertAll(
+                () -> assertNotNull(exception),
+                () -> assertEquals("Id cannot be null", exception.getMessage())
+        );
+    }
+
+    @Test
+    public void delete_byNotExistenceValue() throws Exception {
+        Throwable exception = expectThrows(NullPointerException.class, () -> categoryService.delete(Long.MAX_VALUE));
+
+        assertAll(
+                () -> assertNotNull(exception),
+                () -> assertEquals("Object doesn't exist", exception.getMessage())
+        );
     }
 }
