@@ -23,7 +23,7 @@ public class CurrencyController {
         this.currencyService = currencyService;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    /*@RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Currency> create(@RequestBody Currency currency) throws ObjectAlreadyExists {
         Optional<Currency> localCurrency = currencyService.findByName(currency.getName());
         if (localCurrency.isPresent()) {
@@ -31,7 +31,7 @@ public class CurrencyController {
         }
         Currency categoryForResponse = currencyService.save(currency);
         return new ResponseEntity<>(currency, HttpStatus.CREATED);
-    }
+    }*/
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     public ResponseEntity<Currency> update(@PathVariable("id") Long id, @RequestBody Currency currency) throws ObjectNotFoundException {

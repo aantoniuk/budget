@@ -1,12 +1,14 @@
 package com.budget.core.service;
 
 import com.budget.core.dao.CurrencyDao;
+import com.budget.core.entity.Category;
 import com.budget.core.entity.Currency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class CurrencyService {
@@ -26,15 +28,32 @@ public class CurrencyService {
         return Optional.ofNullable(currencyDao.findOne(id));
     }
 
+    public Currency create(Currency currency) {
+        if(findByName(currency.getName()).findFirst().isPresent()) {
+            throw new IllegalArgumentException("Object already exists");
+        }
+        return currencyDao.save(currency);
+    }
+
     public List<Currency> findAll() {
         return currencyDao.findAll();
     }
 
     public void delete(Long id) {
+        if(!findOne(id).isPresent()) {
+            throw new NullPointerException("Object doesn't exist");
+        }
         currencyDao.delete(id);
     }
 
-    public Optional<Currency> findByName(String name) {
-        return Optional.ofNullable(currencyDao.findByName(name));
+    public Currency update(Currency currency) {
+        if(!findOne(currency.getId()).isPresent()) {
+            throw new NullPointerException("Object doesn't exist");
+        }
+        return currencyDao.save(currency);
+    }
+
+    public Stream<Currency> findByName(String name) {
+        return currencyDao.findByName(name);
     }
 }
