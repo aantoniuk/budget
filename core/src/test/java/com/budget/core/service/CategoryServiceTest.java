@@ -2,13 +2,18 @@ package com.budget.core.service;
 
 import com.budget.core.Utils.OperationType;
 import com.budget.core.entity.Category;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -23,12 +28,17 @@ import static org.junit.jupiter.api.Assertions.expectThrows;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("h2")
+@TestExecutionListeners({
+        TransactionalTestExecutionListener.class,
+        DependencyInjectionTestExecutionListener.class,
+        DbUnitTestExecutionListener.class,
+})
 class CategoryServiceTest {
 
     @Autowired
     private CategoryService categoryService;
 
-    private static Category category;
+    private Category category;
 
     @BeforeEach
     public void init() {
@@ -38,6 +48,13 @@ class CategoryServiceTest {
             category.setType(OperationType.CREDIT);
 
             category = categoryService.create(category);
+        }
+    }
+
+    @AfterEach
+    public void destroy() {
+        if(category != null) {
+            categoryService.delete(category.getId());
         }
     }
 
