@@ -48,23 +48,13 @@ class CategoryServiceTest {
 
     @BeforeEach
     public void init() {
-//        if(category == null) {
-            category = new Category();
-            category.setName("CategoryServiceTest");
-            category.setType(OperationType.CREDIT);
+        category = new Category();
+        category.setName("CategoryServiceTest");
+        category.setType(OperationType.CREDIT);
 
-            category = categoryService.create(category);
-//        }
+        category = categoryService.create(category);
         AssertSqlCount.reset();
     }
-
-//    @AfterEach
-//    @Sql(value = )
-//    public void destroy() {
-//        if(category != null) {
-//            categoryService.delete(category.getId());
-//        }
-//    }
 
     @Test
     public void findOne() throws Exception {
@@ -73,12 +63,14 @@ class CategoryServiceTest {
                 () -> assertTrue(expectedCategory.isPresent()),
                 () -> assertEquals(expectedCategory.get(), category)
         );
-        assertSelectCount(1);
+        // select by first level Cache
+        assertSelectCount(0);
     }
 
     @Test
     public void findOne_notExists() throws Exception {
         assertFalse(categoryService.findOne(Long.MAX_VALUE).isPresent());
+        assertSelectCount(1);
     }
 
     @Test
@@ -125,8 +117,6 @@ class CategoryServiceTest {
                 () -> assertNotNull(categories),
                 () -> assertEquals(categories.count(), 2)
         );
-
-        categoryService.delete(secondCategory.getId());
     }
 
     @Test
@@ -142,7 +132,6 @@ class CategoryServiceTest {
                 () -> assertNotNull(categories),
                 () -> assertEquals(categories.findFirst().get(), childCategory)
         );
-        categoryService.delete(childCategory.getId());
     }
 
     @Test
@@ -164,8 +153,6 @@ class CategoryServiceTest {
                 () -> assertTrue(expectedCategory.isPresent()),
                 () -> assertEquals(expectedCategory.get(), newCategory)
         );
-//
-//        categoryService.delete(newCategory.getId());
     }
 
     @Test
@@ -177,9 +164,14 @@ class CategoryServiceTest {
 
     @Test
     public void update() throws Exception {
+        AssertSqlCount.reset();
         String categoryName = "updateCategory";
         category.setName(categoryName);
         categoryService.update(category);
+
+        assertSelectCount(1);
+        assertInsertCount(0);
+        assertDeleteCount(0);
 
         Optional<Category> expectedCategory = categoryService.findOne(category.getId());
 
@@ -199,12 +191,17 @@ class CategoryServiceTest {
 
     @Test
     public void delete() throws Exception {
+        AssertSqlCount.reset();
+
         categoryService.delete(category.getId());
+
+        assertSelectCount(0);
+        assertInsertCount(0);
+        assertUpdateCount(0);
 
         Optional<Category> deletedCategory = categoryService.findOne(category.getId());
 
         assertFalse(deletedCategory.isPresent());
-        category = null;
     }
 
     @Test
