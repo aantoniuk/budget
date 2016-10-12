@@ -93,18 +93,15 @@ public class UserService {
 
     @Transactional
     public User create(User user) {
-
         Optional userOpt = findByLogin(user.getLogin());
         if(userOpt.isPresent()) {
-            // throw new IllegalArgumentException("User already exists with login:" + user.getLogin());
-            throw new NullPointerException("User already exists with login:" + user.getLogin());
+            throw new IllegalArgumentException("User already exists with login:" + user.getLogin());
+            // throw new NullPointerException("User already exists with login:" + user.getLogin());
         }
 
         User savedUser = userDao.save(user);
-
         createUserCurrencies(savedUser);
         createUserCategories(savedUser);
-
         return savedUser;
     }
 
