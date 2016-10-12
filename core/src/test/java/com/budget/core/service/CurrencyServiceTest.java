@@ -1,25 +1,37 @@
 package com.budget.core.service;
 
 import com.budget.core.entity.Currency;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertDeleteCount;
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertInsertCount;
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertSelectCount;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("h2")
+@TestExecutionListeners({
+        TransactionalTestExecutionListener.class,
+        DependencyInjectionTestExecutionListener.class,
+        DbUnitTestExecutionListener.class
+})
+@Transactional
 class CurrencyServiceTest {
 
     @Autowired
@@ -28,22 +40,14 @@ class CurrencyServiceTest {
     private static Currency currency;
 
     @BeforeEach
-    public void init() {
-        if(currency == null) {
+    public void init(TestInfo testInfo) {
+        if (!testInfo.getTags().contains("dontadd")) {
             currency = new Currency();
             currency.setName("XXX");
             currency.setValue(753L);
-
             currency = currencyService.create(currency);
         }
-    }
-
-    @AfterEach
-    public void afterEach() {
-        if(currency != null) {
-            currencyService.delete(currency.getId());
-            currency = null;
-        }
+        AssertSqlCount.reset();
     }
 
     @Test
@@ -52,11 +56,13 @@ class CurrencyServiceTest {
         assertAll(
                 () -> assertTrue(expectedCurrency.isPresent()),
                 () -> assertEquals(expectedCurrency.get(), currency));
+        assertSelectCount(0);
     }
 
     @Test
     public void findOne_notExists() throws Exception {
         assertFalse(currencyService.findOne(Long.MAX_VALUE).isPresent());
+        assertSelectCount(1);
     }
 
     @Test
@@ -65,6 +71,7 @@ class CurrencyServiceTest {
         assertAll(
                 () -> assertNotNull(currencies),
                 () -> assertEquals(currencies.findFirst().get(), currency));
+        assertSelectCount(1);
     }
 
     @Test
@@ -72,16 +79,17 @@ class CurrencyServiceTest {
         currency.setName(currency.getName().toLowerCase());
         Stream<Currency> currencies = currencyService.findByName(currency.getName());
         assertFalse(currencies.findFirst().isPresent());
+        assertSelectCount(1);
     }
 
     @Test
+    @Tag("dontadd")
     public void findAll_notExists() throws Exception {
-        currencyService.delete(currency.getId());
         List<Currency> currencies = currencyService.findAll();
-        currency = null;
         assertAll(
                 () -> assertNotNull(currencies),
-                () -> assertEquals(currencies.size(), 0));
+                () -> assertEquals(0, currencies.size()));
+        assertSelectCount(1);
     }
 
     @Test
@@ -90,11 +98,12 @@ class CurrencyServiceTest {
         secondCurrency.setName(currency.getName().toLowerCase());
         secondCurrency.setValue(2L);
         currencyService.create(secondCurrency);
-
         List<Currency> currencies = currencyService.findAll();
         assertAll(
                 () -> assertNotNull(currencies),
                 () -> assertEquals(currencies.size(), 2));
+        assertSelectCount(2);
+        assertInsertCount(1);
     }
 
     @Test
@@ -109,6 +118,8 @@ class CurrencyServiceTest {
                 () -> assertEquals(foundCurrency.get(), localCurrency)
         );
         currencyService.delete(createdCurrency.getId());
+        assertSelectCount(1);
+        assertInsertCount(1);
     }
 
     @Test
@@ -117,35 +128,39 @@ class CurrencyServiceTest {
         Throwable localException = Assertions.expectThrows(IllegalArgumentException.class,
                 () -> currencyService.create(newCurrency));
         assertEquals("Object already exists", localException.getMessage());
+        assertSelectCount(1);
     }
 
     @Test
     public void update_ifExists() throws Exception {
-        currency.setName(currency.getName().toLowerCase());
         currency.setValue(currency.getValue() + 3L);
         currencyService.update(currency);
-
         Optional<Currency> expectedCurrency = currencyService.findOne(currency.getId());
         assertAll(
                 () -> assertTrue(expectedCurrency.isPresent()),
                 () -> assertEquals(expectedCurrency.get(), currency));
+
+        assertSelectCount(0);
+        assertInsertCount(0);
     }
 
     @Test
     public void update_notExists() throws Exception {
-        Currency localCurrency = new Currency("YYY", 10657L);
+        Currency localCurrency = new Currency("ZZZ", 10657L);
         Throwable localException = Assertions.expectThrows(NullPointerException.class,
                 () -> currencyService.update(localCurrency));
         assertEquals("Object doesn't exist", localException.getMessage());
+        assertSelectCount(1);
     }
 
     @Test
     public void delete_ifExists() throws Exception {
         currencyService.delete(currency.getId());
         Optional<Currency> expectedCurrency = currencyService.findOne(currency.getId());
-        currency = null;
         assertAll(
                 () -> assertTrue(!expectedCurrency.isPresent()));
+        assertSelectCount(0);
+        assertDeleteCount(0);
     }
 
     @Test
@@ -153,5 +168,7 @@ class CurrencyServiceTest {
         Throwable localException = Assertions.expectThrows(NullPointerException.class,
                 () -> currencyService.delete(Long.MAX_VALUE));
         assertEquals("Object doesn't exist", localException.getMessage());
+        assertSelectCount(1);
+        assertDeleteCount(0);
     }
 }
