@@ -66,29 +66,12 @@ public class UserService {
     }
 
     private void deleteUserCategories(User user) {
-        categoryService.findAll().
-                filter(item -> item.getParent() == null).
-                forEach(item -> deleteUserCategory(user, item, null));
-    }
-
-    private void deleteUserCategory(User user, Category category, UserCategory parentUserCategory) {
-        UserCategory userCategory = new UserCategory();
-        userCategory.setUser(user);
-        userCategory.setName(category.getName());
-        userCategory.setParent(parentUserCategory);
-
-        userCategoryService.delete(userCategory);
-        category.getChildren().forEach(item -> createUserCategory(user, item, userCategory));
+        userCategoryService.findByParentId(user.getId(), null).
+                forEach(item -> userCategoryService.delete(item.getId()));
     }
 
     private void deleteUserCurrencies(User user) {
-        currencyService.findAll().forEach(item -> {
-            UserCurrency userCurrency = new UserCurrency();
-            userCurrency.setUser(user);
-            userCurrency.setCurrency(item);
-
-            userCurrencyService.delete(userCurrency);
-        });
+        userCurrencyService.findAll().forEach(userCurrencyService::delete);
     }
 
     @Transactional
@@ -116,8 +99,7 @@ public class UserService {
     }
 
     private void createUserCategories(User user) {
-        categoryService.findAll().
-                filter(item -> item.getParent() == null).
+        categoryService.findByParentId(null).
                 forEach(item -> createUserCategory(user, item, null));
     }
 
@@ -127,8 +109,8 @@ public class UserService {
         userCategory.setName(category.getName());
         userCategory.setParent(parentUserCategory);
 
-        UserCategory savedUserCategory = userCategoryService.save(userCategory);
-        category.getChildren().forEach(item -> createUserCategory(user, item, savedUserCategory));
+        userCategoryService.create(userCategory);
+        category.getChildren().forEach(item -> createUserCategory(user, item, userCategory));
     }
 
     public Optional<User> findOne(Long id) {

@@ -19,6 +19,6 @@ public class Category {
     private OperationType type;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Category parent;
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private Set<Category> children;
 }

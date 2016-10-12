@@ -31,10 +31,6 @@ public class CategoryService {
         return categoryDao.findByParentId(parentId);
     }
 
-    public Stream<Category> findAll() {
-        return categoryDao.findAll();
-    }
-
     public Category create(Category category) {
         checkExistenceByNameTypeParent(category);
         return categoryDao.save(category);

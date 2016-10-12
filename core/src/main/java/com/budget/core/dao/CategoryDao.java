@@ -19,8 +19,6 @@ public interface CategoryDao extends Repository<Category, Long> {
 
     Optional<Category> findByNameAndTypeAndParentId(String name, OperationType type, Long parentId);
 
-    Stream<Category> findAll();
-
     Category save(Category category);
 
     void delete(Long id);
