@@ -63,7 +63,7 @@ public class CurrencyControllerTest {
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
-    @Test
+    /*@Test
     public void findAll_CurrenciesFound_ShouldReturnRightResponseEntity() throws Exception {
         Mockito.when(serviceMock.findAll()).thenReturn(Arrays.asList(currencyOptionalNotNullOne.get(), currencyOptionalNotNullTwo.get()));
 
@@ -79,9 +79,9 @@ public class CurrencyControllerTest {
 
         Mockito.verify(serviceMock, Mockito.times(1)).findAll();
         Mockito.verifyNoMoreInteractions(serviceMock);
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void findAll_CurrenciesNotFound_ShouldReturnRightResponseException() throws Exception {
         Mockito.when(serviceMock.findAll()).thenReturn(new ArrayList<>());
 
@@ -90,7 +90,7 @@ public class CurrencyControllerTest {
 
         Mockito.verify(serviceMock, Mockito.times(1)).findAll();
         Mockito.verifyNoMoreInteractions(serviceMock);
-    }
+    }*/
 
     @Test
     public void deleteById_CurrencyIsFound_ShouldReturnRightResponseEntity() throws Exception {

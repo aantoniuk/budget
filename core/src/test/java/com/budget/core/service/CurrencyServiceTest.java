@@ -85,10 +85,10 @@ class CurrencyServiceTest {
     @Test
     @Tag("dontadd")
     public void findAll_notExists() throws Exception {
-        List<Currency> currencies = currencyService.findAll();
+        Stream<Currency> currencies = currencyService.findAll();
         assertAll(
                 () -> assertNotNull(currencies),
-                () -> assertEquals(0, currencies.size()));
+                () -> assertEquals(0, currencies.count()));
         assertSelectCount(1);
     }
 
@@ -98,10 +98,10 @@ class CurrencyServiceTest {
         secondCurrency.setName(currency.getName().toLowerCase());
         secondCurrency.setValue(2L);
         currencyService.create(secondCurrency);
-        List<Currency> currencies = currencyService.findAll();
+        Stream<Currency> currencies = currencyService.findAll();
         assertAll(
                 () -> assertNotNull(currencies),
-                () -> assertEquals(currencies.size(), 2));
+                () -> assertEquals(currencies.count(), 2));
         assertSelectCount(2);
         assertInsertCount(1);
     }

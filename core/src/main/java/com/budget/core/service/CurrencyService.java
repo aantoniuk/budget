@@ -1,7 +1,6 @@
 package com.budget.core.service;
 
 import com.budget.core.dao.CurrencyDao;
-import com.budget.core.entity.Category;
 import com.budget.core.entity.Currency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class CurrencyService {
     }
 
     public Optional<Currency> findOne(Long id) {
-        return Optional.ofNullable(currencyDao.findOne(id));
+        return currencyDao.findOne(id);
     }
 
     public Currency create(Currency currency) {
@@ -35,7 +34,7 @@ public class CurrencyService {
         return currencyDao.save(currency);
     }
 
-    public List<Currency> findAll() {
+    public Stream<Currency> findAll() {
         return currencyDao.findAll();
     }
 

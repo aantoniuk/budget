@@ -78,10 +78,10 @@ class UserCurrencyServiceTest {
     @Test
     @Tag("dontadd")
     public void findAll_notExists() throws Exception {
-        List<UserCurrency> userCurrencies = userCurrencyService.findAll();
+        Stream<UserCurrency> userCurrencies = userCurrencyService.findAll();
         assertAll(
                 () -> assertNotNull(userCurrencies),
-                () -> assertEquals(0, userCurrencies.size()));
+                () -> assertEquals(0, userCurrencies.count()));
         assertSelectCount(1);
     }
 }

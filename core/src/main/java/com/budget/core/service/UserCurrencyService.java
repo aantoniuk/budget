@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class UserCurrencyService {
@@ -19,7 +20,7 @@ public class UserCurrencyService {
         this.userCurrencyDao = userCurrencyDao;
     }
 
-    public List<UserCurrency> findAll() {
+    public Stream<UserCurrency> findAll() {
         return userCurrencyDao.findAll();
     }
 
@@ -28,11 +29,11 @@ public class UserCurrencyService {
     }
 
     public void delete(UserCurrency userCurrency) {
-        userCurrencyDao.delete(userCurrency);
+        userCurrencyDao.delete(userCurrency.getId());
     }
 
     public Optional<UserCurrency> findOne(Long id) {
-        return Optional.ofNullable(userCurrencyDao.findOne(id));
+        return userCurrencyDao.findOne(id);
     }
 
     public UserCurrency create(UserCurrency userCurrency) {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 //@RestController
 @RequestMapping("/currencies")
@@ -65,12 +66,12 @@ public class CurrencyController {
         return new ResponseEntity<>(localCurrency.get(), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    /*@RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Currency>> getAll() throws ObjectNotFoundException {
-        List<Currency> currencyList = currencyService.findAll();
-        if (currencyList.isEmpty()) {
+        Stream<Currency> currencyList = currencyService.findAll();
+        if (!currencyList.findFirst().isPresent()) {
             throw new ObjectNotFoundException("REST Controller: All Currency Objects have not been found.");
         }
         return new ResponseEntity<>(currencyList, HttpStatus.OK);
-    }
+    }*/
 }
