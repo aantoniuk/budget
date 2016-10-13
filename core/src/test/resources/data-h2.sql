@@ -1,5 +1,3 @@
 TRUNCATE TABLE category;
-TRUNCATE TABLE currency;
-TRUNCATE TABLE user_currency;
-
-
+DELETE FROM user_currency;
+DELETE FROM currency;
