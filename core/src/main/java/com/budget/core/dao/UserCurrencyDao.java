@@ -10,6 +10,10 @@ import java.util.stream.Stream;
 public interface UserCurrencyDao extends Repository<UserCurrency, Long> {
     Optional<UserCurrency> findByUserIdAndCurrencyId(Long userId, Long currencyId);
 
+    Stream<UserCurrency> findByUserId(Long userId);
+
+    Stream<UserCurrency> findByCurrencyId(Long currencyId);
+
     UserCurrency save(UserCurrency currency);
 
     Stream<UserCurrency> findAll();

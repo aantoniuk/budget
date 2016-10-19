@@ -15,8 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertSelectCount;
@@ -34,37 +34,48 @@ class UserCurrencyServiceTest {
     @Autowired
     private UserService userService;
 
-    private static UserCurrency localUserCurrency;
-    private static Currency localCurrency;
-    private static User localUser;
+    private static UserCurrency localUserCurrencyOne, localUserCurrencyTwo;
+    private static Currency localCurrencyOne, localCurrencyTwo;
+    private static User localUserOne;
 
     @BeforeEach
     public void init(TestInfo testInfo) {
         if (!testInfo.getTags().contains("dontadd")) {
-            localUser = new User();
-            localUser.setLogin("host");
-            localUser.setEnable(true);
-            localUser.setPassword("pwd");
-            userService.create(localUser);
-            localCurrency = new Currency("XXX", 761L);
-            currencyService.create(localCurrency);
-            localUserCurrency = new UserCurrency();
-            localUserCurrency.setUser(localUser);
-            localUserCurrency.setCurrency(localCurrency);
-            localUserCurrency = userCurrencyService.create(localUserCurrency);
+            localUserOne = new User();
+            localUserOne.setLogin("host");
+            localUserOne.setEnable(true);
+            localUserOne.setPassword("pwd");
+
+            userService.create(localUserOne);
+
+            localCurrencyOne = new Currency("XXX", 761L);
+            localCurrencyTwo = new Currency("YYY", 7894561L);
+
+            currencyService.create(localCurrencyOne);
+            currencyService.create(localCurrencyTwo);
+
+            localUserCurrencyOne = new UserCurrency();
+            localUserCurrencyOne.setUser(localUserOne);
+            localUserCurrencyOne.setCurrency(localCurrencyOne);
+            localUserCurrencyOne = userCurrencyService.create(localUserCurrencyOne);
+
+            localUserCurrencyTwo = new UserCurrency();
+            localUserCurrencyTwo.setUser(localUserOne);
+            localUserCurrencyTwo.setCurrency(localCurrencyTwo);
+            localUserCurrencyTwo = userCurrencyService.create(localUserCurrencyTwo);
         }
         AssertSqlCount.reset();
     }
 
     @Test
     public void findOne_ifExists() throws Exception {
-        Optional<UserCurrency> expectedUserCurrency = userCurrencyService.findOne(localUserCurrency.getId());
+        Optional<UserCurrency> expectedUserCurrency = userCurrencyService.findOne(localUserCurrencyOne.getId());
 
         assertAll(
                 () -> assertTrue(expectedUserCurrency.isPresent()),
-                () -> assertEquals(expectedUserCurrency.get(), localUserCurrency),
-                () -> assertEquals(expectedUserCurrency.get().getCurrency(), localCurrency),
-                () -> assertEquals(expectedUserCurrency.get().getUser(), localUser)
+                () -> assertEquals(expectedUserCurrency.get(), localUserCurrencyOne),
+                () -> assertEquals(expectedUserCurrency.get().getCurrency(), localCurrencyOne),
+                () -> assertEquals(expectedUserCurrency.get().getUser(), localUserOne)
         );
         assertSelectCount(0);
     }
@@ -82,6 +93,50 @@ class UserCurrencyServiceTest {
         assertAll(
                 () -> assertNotNull(userCurrencies),
                 () -> assertEquals(0, userCurrencies.count()));
+        assertSelectCount(1);
+    }
+
+    @Test
+    public void findUserCurrencyByUser_ifExists() throws Exception {
+        Supplier<Stream<UserCurrency>> userCurrencySupplier = () -> userCurrencyService.findByUser(localUserOne.getId());
+        assertAll(
+                () -> assertNotNull(userCurrencySupplier),
+                () -> assertEquals(2, userCurrencySupplier.get().count()),
+                () -> assertEquals(localUserOne, userCurrencySupplier.get().findAny().get().getUser()),
+                () -> assertEquals(localCurrencyOne,
+                        userCurrencySupplier.get()
+                                .filter(c -> c.getCurrency().equals(localCurrencyOne)).findAny().get().getCurrency()),
+                () -> assertEquals(localCurrencyTwo,
+                        userCurrencySupplier.get()
+                                .filter(c -> c.getCurrency().equals(localCurrencyTwo)).findAny().get().getCurrency())
+        );
+        // Any usage of Stream in assertAll produces new Select to DB
+        assertSelectCount(4);
+    }
+
+    @Test
+    public void findUserCurrencyByUser_notExists() throws Exception {
+        Stream<UserCurrency> userCurrencyStream = userCurrencyService.findByUser(Long.MAX_VALUE);
+        assertAll( () -> assertEquals(0, userCurrencyStream.count()) );
+        assertSelectCount(1);
+    }
+
+    @Test
+    public void findUserCurrencyByCurrency_ifExists() throws Exception {
+        Supplier<Stream<UserCurrency>> userCurrencySupplier = () -> userCurrencyService.findByCurrency(localCurrencyTwo.getId());
+        assertAll(
+                () -> assertNotNull(userCurrencySupplier),
+                () -> assertEquals(1, userCurrencySupplier.get().count()),
+                () -> assertEquals(localUserOne, userCurrencySupplier.get().findAny().get().getUser()),
+                () -> assertEquals(localCurrencyTwo, userCurrencySupplier.get().findAny().get().getCurrency())
+        );
+        assertSelectCount(3);
+    }
+
+    @Test
+    public void findUserCurrencyByCurrency_notExists() throws Exception {
+        Stream<UserCurrency> userCurrencyStream = userCurrencyService.findByCurrency(Long.MAX_VALUE);
+        assertAll( () -> assertEquals(0, userCurrencyStream.count()));
         assertSelectCount(1);
     }
 }
