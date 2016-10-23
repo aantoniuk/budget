@@ -71,7 +71,7 @@ public class UserService {
     }
 
     private void deleteUserCurrencies(User user) {
-        userCurrencyService.findAll().forEach(userCurrencyService::delete);
+        userCurrencyService.findAll().forEach(item -> userCurrencyService.delete(item.getId()));
     }
 
     @Transactional

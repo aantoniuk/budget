@@ -4,10 +4,7 @@ import com.budget.core.entity.Currency;
 import com.budget.core.entity.User;
 import com.budget.core.entity.UserCurrency;
 import com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +16,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertDeleteCount;
 import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertSelectCount;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -138,5 +136,54 @@ class UserCurrencyServiceTest {
         Stream<UserCurrency> userCurrencyStream = userCurrencyService.findByCurrency(Long.MAX_VALUE);
         assertAll( () -> assertEquals(0, userCurrencyStream.count()));
         assertSelectCount(1);
+    }
+
+    @Test
+    public void deleteUserCurrency_ifExists() throws Exception {
+        Long localId = localUserCurrencyTwo.getId();
+        Stream<UserCurrency> userCurrencyBefore = userCurrencyService.findAll();
+        long userCurrencyCountBefore = userCurrencyBefore.count();
+
+        userCurrencyService.delete(localId);
+
+        Stream<UserCurrency> userCurrencyAfter = userCurrencyService.findAll();
+        long userCurrencyCountAfter = userCurrencyAfter.count();
+
+        Optional<UserCurrency> deletedUserCurrency = userCurrencyService.findOne(localId);
+        assertAll(
+                () -> assertFalse(deletedUserCurrency.isPresent())
+        );
+
+        Optional<Currency> expectedCurrency = currencyService.findOne(localCurrencyTwo.getId());
+        assertAll(
+                () -> assertTrue(expectedCurrency.isPresent()),
+                () -> assertEquals(localCurrencyTwo, expectedCurrency.get())
+        );
+
+        Optional<User> expectedUser = userService.findOne(localUserOne.getId());
+        assertAll(
+                () -> assertTrue(expectedUser.isPresent()),
+                () -> assertEquals(localUserOne, expectedUser.get())
+        );
+
+        assertEquals(userCurrencyCountBefore, userCurrencyCountAfter);
+        assertDeleteCount(0);
+        assertSelectCount(2);
+    }
+
+    @Test
+    public void deleteUserCurrency_notExists() throws Exception {
+        Stream<UserCurrency> userCurrencyBefore = userCurrencyService.findAll();
+        long userCurrencyCountBefore = userCurrencyBefore.count();
+
+        Throwable localException = Assertions.expectThrows(NullPointerException.class,
+                () -> userCurrencyService.delete(Long.MAX_VALUE));
+        assertEquals("Object doesn't exist", localException.getMessage());
+
+        Stream<UserCurrency> userCurrencyAfter = userCurrencyService.findAll();
+        long userCurrencyCountAfter = userCurrencyAfter.count();
+
+        assertEquals(userCurrencyCountBefore, userCurrencyCountAfter);
+        assertSelectCount(3);
     }
 }
