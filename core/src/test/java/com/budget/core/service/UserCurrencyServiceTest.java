@@ -206,18 +206,16 @@ class UserCurrencyServiceTest {
         UserCurrency userCurrencyForUpdate = new UserCurrency();
         userCurrencyForUpdate.setCurrency(localCurrencyTwo);
         userCurrencyForUpdate.setUser(localUserOne);
-        UserCurrency userCurrencyActual = userCurrencyService.update(localUserCurrencyTwo);
+        Throwable localException = Assertions.expectThrows(NullPointerException.class,
+                () -> userCurrencyService.update(userCurrencyForUpdate));
         long userCurrencyCountAfter = userCurrencyService.findAll().count();
 
         assertAll(
-                () -> assertNotNull(userCurrencyActual),
-                () -> assertEquals(localUserCurrencyTwo, userCurrencyActual),
-                () -> assertEquals(localUserOne, userCurrencyActual.getUser()),
-                () -> assertEquals(localCurrencyTwo, userCurrencyActual.getCurrency()),
+                () -> assertEquals("Object doesn't exist", localException.getMessage()),
                 () -> assertEquals(userCurrencyCountBefore, userCurrencyCountAfter)
         );
 
-        assertSelectCount(2);
+        assertSelectCount(3);
         assertInsertCount(0);
         assertUpdateCount(0);
     }
