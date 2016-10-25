@@ -26,10 +26,6 @@ public class UserCurrencyService {
         return userCurrencyDao.save(userCurrency);
     }
 
-//    public void delete(UserCurrency userCurrency) {
-//        userCurrencyDao.delete(userCurrency.getId());
-//    }
-
     public void delete(Long id) {
         if(id == null) {
             throw new NullPointerException("Id cannot be null");
@@ -46,6 +42,13 @@ public class UserCurrencyService {
 
     public UserCurrency create(UserCurrency userCurrency) {
         checkExistenceByUserAndCurrency(userCurrency);
+        return userCurrencyDao.save(userCurrency);
+    }
+
+    public UserCurrency update(UserCurrency userCurrency) {
+        if(!findOne(userCurrency.getId()).isPresent()) {
+            throw new NullPointerException("Object doesn't exist");
+        }
         return userCurrencyDao.save(userCurrency);
     }
 
