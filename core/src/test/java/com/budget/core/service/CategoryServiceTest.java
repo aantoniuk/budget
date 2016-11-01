@@ -157,7 +157,11 @@ class CategoryServiceTest {
 
     @Test
     public void create_duplicateCategory() throws Exception {
-        Throwable exception = expectThrows(IllegalArgumentException.class, () -> categoryService.create(category));
+        Category duplicatedCategory = new Category();
+        duplicatedCategory.setName(category.getName());
+        duplicatedCategory.setType(category.getType());
+        duplicatedCategory.setParent(category.getParent());
+        Throwable exception = expectThrows(IllegalArgumentException.class, () -> categoryService.create(duplicatedCategory));
 
         assertNotNull(exception);
     }
@@ -201,6 +205,32 @@ class CategoryServiceTest {
 
         Optional<Category> deletedCategory = categoryService.findOne(category.getId());
 
+        assertFalse(deletedCategory.isPresent());
+    }
+
+    @Test
+    public void delete_cascade() throws Exception {
+
+        Category childCategory = new Category();
+        childCategory.setName("childCategory");
+        childCategory.setType(OperationType.CREDIT);
+        categoryService.create(childCategory);
+
+        category.getChildren().add(childCategory);
+        categoryService.update(category);
+
+        AssertSqlCount.reset();
+
+        categoryService.delete(category.getId());
+
+        assertSelectCount(0);
+        assertInsertCount(0);
+        assertUpdateCount(0);
+
+        Optional<Category> deletedCategory = categoryService.findOne(category.getId());
+        assertFalse(deletedCategory.isPresent());
+
+        deletedCategory = categoryService.findOne(childCategory.getId());
         assertFalse(deletedCategory.isPresent());
     }
 
