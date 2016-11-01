@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 public interface CurrencyDao extends Repository<Currency, Long> {
 
-    Stream<Currency> findByName(String name);
+    Stream<Currency> findByName(String name); // FIXME Name is unique field
 
     Currency save(Currency currency);
 
