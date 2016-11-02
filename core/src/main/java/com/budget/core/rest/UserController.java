@@ -29,7 +29,7 @@ public class UserController {
         if (localUser.isPresent()) {
             throw new ObjectAlreadyExists("REST Controller: Object User with id " + localUser.get().getId() +" is already exist.");
         }
-        User userForResponse = userService.save(user);
+        User userForResponse = userService.update(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
@@ -42,7 +42,7 @@ public class UserController {
         if (user.getLogin() != null) {
             localUser.get().setLogin(user.getLogin());
         }
-        userService.save(user);
+        userService.update(user);
         return new ResponseEntity<>(localUser.get(), HttpStatus.OK);
     }
 

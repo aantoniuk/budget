@@ -32,11 +32,29 @@ public class UserService {
     }
 
     public Optional<User> findByLogin(String login) {
-        return Optional.ofNullable(userDao.findByLogin(login));
+        return userDao.findByLogin(login);
+    }
+
+    public Optional<User> findOne(Long id) {
+        return userDao.findOne(id);
     }
 
     @Transactional
-    public User save(User user) {
+    public User create(User user) {
+        Optional userOptional = findByLogin(user.getLogin());
+        if(userOptional.isPresent()) {
+            throw new IllegalArgumentException("User already exists with login:" + user.getLogin());
+            // throw new NullPointerException("User already exists with login:" + user.getLogin());
+        }
+
+        User savedUser = userDao.save(user);
+        createUserCurrencies(savedUser);
+        createUserCategories(savedUser);
+        return savedUser;
+    }
+
+    @Transactional
+    public User update(User user) {
         Optional<User> optionalUser = findOne(user.getId());
         if (!optionalUser.isPresent()) {
             //throw new IllegalArgumentException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
@@ -44,9 +62,8 @@ public class UserService {
         }
         optionalUser.get().setLogin(user.getLogin());
         optionalUser.get().setEnable(user.isEnable());
-        User updatedUser = userDao.save(optionalUser.get());
 
-        return updatedUser;
+        return userDao.save(optionalUser.get());
     }
 
     @Transactional
@@ -57,7 +74,7 @@ public class UserService {
             throw new NullPointerException("User doesn't exist with id:" + id);
         }
 
-        userDao.delete(userOptional.get());
+        userDao.delete(id);
 
         deleteUserCategories(userOptional.get());
         deleteUserCurrencies(userOptional.get());
@@ -71,21 +88,7 @@ public class UserService {
     }
 
     private void deleteUserCurrencies(User user) {
-        userCurrencyService.findAll().forEach(item -> userCurrencyService.delete(item.getId()));
-    }
-
-    @Transactional
-    public User create(User user) {
-        Optional userOpt = findByLogin(user.getLogin());
-        if(userOpt.isPresent()) {
-            throw new IllegalArgumentException("User already exists with login:" + user.getLogin());
-            // throw new NullPointerException("User already exists with login:" + user.getLogin());
-        }
-
-        User savedUser = userDao.save(user);
-        createUserCurrencies(savedUser);
-        createUserCategories(savedUser);
-        return savedUser;
+        userCurrencyService.findByUser(user.getId()).forEach(item -> userCurrencyService.delete(item.getId()));
     }
 
     private void createUserCurrencies(User user) {
@@ -111,14 +114,6 @@ public class UserService {
 
         userCategoryService.create(userCategory);
         category.getChildren().forEach(item -> createUserCategory(user, item, userCategory));
-    }
-
-    public Optional<User> findOne(Long id) {
-        return Optional.ofNullable(userDao.findOne(id));
-    }
-
-    public List<User> findAll() {
-        return userDao.findAll();
     }
 }
 

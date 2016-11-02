@@ -134,7 +134,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.enable", Matchers.is(userOptionalNotNullOne.get().isEnable())));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findOne(USER_ID_LONG);
-        Mockito.verify(serviceMock, Mockito.times(1)).save(org.mockito.Matchers.refEq(userOptionalNotNullOne.get()));
+        Mockito.verify(serviceMock, Mockito.times(1)).update(org.mockito.Matchers.refEq(userOptionalNotNullOne.get()));
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
@@ -166,7 +166,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.enable", Matchers.is(userOptionalNotNullOne.get().isEnable())));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findByLogin(userOptionalNotNullOne.get().getLogin());
-        Mockito.verify(serviceMock, Mockito.times(1)).save(org.mockito.Matchers.refEq(userOptionalNotNullOne.get()));
+        Mockito.verify(serviceMock, Mockito.times(1)).update(org.mockito.Matchers.refEq(userOptionalNotNullOne.get()));
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
