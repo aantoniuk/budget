@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class UserCurrency {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private boolean enable = false;
+    private boolean enable = true;
     @ManyToOne
     private User user;
     @ManyToOne
