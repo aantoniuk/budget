@@ -19,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertDeleteCount;
-import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertInsertCount;
 import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertSelectCount;
-import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertUpdateCount;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -144,9 +141,6 @@ class CategoryServiceTest {
         categoryService.create(newCategory);
 
         assertSelectCount(1);
-        assertInsertCount(1);
-        assertUpdateCount(0);
-        assertDeleteCount(0);
 
         Optional<Category> expectedCategory = categoryService.findOne(newCategory.getId());
         assertAll(
@@ -174,8 +168,6 @@ class CategoryServiceTest {
         categoryService.update(category);
 
         assertSelectCount(1);
-        assertInsertCount(0);
-        assertDeleteCount(0);
 
         Optional<Category> expectedCategory = categoryService.findOne(category.getId());
 
@@ -200,8 +192,6 @@ class CategoryServiceTest {
         categoryService.delete(category.getId());
 
         assertSelectCount(0);
-        assertInsertCount(0);
-        assertUpdateCount(0);
 
         Optional<Category> deletedCategory = categoryService.findOne(category.getId());
 
@@ -224,8 +214,6 @@ class CategoryServiceTest {
         categoryService.delete(category.getId());
 
         assertSelectCount(0);
-        assertInsertCount(0);
-        assertUpdateCount(0);
 
         Optional<Category> deletedCategory = categoryService.findOne(category.getId());
         assertFalse(deletedCategory.isPresent());
