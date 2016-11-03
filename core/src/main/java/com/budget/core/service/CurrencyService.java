@@ -28,7 +28,7 @@ public class CurrencyService {
     }
 
     public Currency create(Currency currency) {
-        if(findByName(currency.getName()).findFirst().isPresent()) {
+        if(findByName(currency.getName()).isPresent()) {
             throw new IllegalArgumentException("Object already exists");
         }
         return currencyDao.save(currency);
@@ -52,7 +52,7 @@ public class CurrencyService {
         return currencyDao.save(currency);
     }
 
-    public Stream<Currency> findByName(String name) {
+    public Optional<Currency> findByName(String name) {
         return currencyDao.findByName(name);
     }
 }
