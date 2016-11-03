@@ -8,9 +8,11 @@ import java.util.stream.Stream;
 
 public interface WalletDao extends Repository<Wallet, Long> {
 
-    Stream<Wallet> findByNameAndUserCurrencyId(String name, long userCurrencyId); // FIXME I am not sure that work by primitive.
+    Stream<Wallet> findByNameAndUserIdAndCurrencyId(String name, Long userId, Long currencyId);
 
-    Stream<Wallet> findByUserCurrencyId(Long userCurrencyId);
+    // Stream<Wallet> findByNameAndUserId(String name, Long userId);
+
+    //Stream<Wallet> findByNameAndUserCurrencyId(String name, Long userCurrencyId);
 
     Wallet save(Wallet wallet);
 

@@ -67,18 +67,18 @@ class CurrencyServiceTest {
 
     @Test
     public void findByName_ifExists() throws Exception {
-        Stream<Currency> currencies = currencyService.findByName(currency.getName());
+        Optional<Currency> currencies = currencyService.findByName(currency.getName());
         assertAll(
-                () -> assertNotNull(currencies),
-                () -> assertEquals(currencies.findFirst().get(), currency));
+                () -> assertTrue(currencies.isPresent()),
+                () -> assertEquals(currencies.get(), currency));
         assertSelectCount(1);
     }
 
     @Test
     public void findByName_notExists() throws Exception {
         currency.setName(currency.getName().toLowerCase());
-        Stream<Currency> currencies = currencyService.findByName(currency.getName());
-        assertFalse(currencies.findFirst().isPresent());
+        Optional<Currency> currencies = currencyService.findByName(currency.getName());
+        assertFalse(currencies.isPresent());
         assertSelectCount(1);
     }
 

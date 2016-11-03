@@ -11,10 +11,14 @@ public class Wallet {
     private long id;
     @NonNull
     private String name;
-    @NonNull // FIXME doesn't work with primitive. I guess we need to define true value here
-    private boolean enable;
+    @NonNull
+    private Boolean enable = true;
     @NonNull
     @ManyToOne
-    // FIXME I guess we need to use relations to User and Carency instead UserCurrency
-    private UserCurrency userCurrency;
+    @JoinColumn(name="USER_ID")
+    private User user;
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name="CURRENCY_ID")
+    private Currency currency;
 }

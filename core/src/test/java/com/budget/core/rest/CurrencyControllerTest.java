@@ -100,7 +100,7 @@ public class CurrencyControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) currencyOptionalNotNullOne.get().getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(currencyOptionalNotNullOne.get().getName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.value", Matchers.is((int) currencyOptionalNotNullOne.get().getValue())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.value", Matchers.is(Math.toIntExact(currencyOptionalNotNullOne.get().getValue()))));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findOne(CURRENCY_ID_LONG);
         Mockito.verify(serviceMock, Mockito.times(1)).delete(CURRENCY_ID_LONG);
@@ -130,7 +130,7 @@ public class CurrencyControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) currencyOptionalNotNullOne.get().getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(currencyOptionalNotNullOne.get().getName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.value", Matchers.is((int) currencyOptionalNotNullOne.get().getValue())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.value", Matchers.is(Math.toIntExact(currencyOptionalNotNullOne.get().getValue()))));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findOne(CURRENCY_ID_LONG);
         Mockito.verify(serviceMock, Mockito.times(1)).save(org.mockito.Matchers.refEq(currencyOptionalNotNullOne.get()));

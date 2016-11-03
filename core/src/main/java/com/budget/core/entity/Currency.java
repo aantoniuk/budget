@@ -15,6 +15,6 @@ public class Currency {
     private long id;
     @NonNull
     private String name;
-    @NonNull //FIXME doesn't work with primitive
-    private long value;
+    @NonNull
+    private Long value;
 }
