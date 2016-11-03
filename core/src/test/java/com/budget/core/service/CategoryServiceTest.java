@@ -4,6 +4,7 @@ import com.budget.core.Utils.OperationType;
 import com.budget.core.entity.Category;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,12 +15,14 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertDeleteCount;
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertInsertCount;
 import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertSelectCount;
+import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertUpdateCount;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.expectThrows;
         DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class
 })
-@Transactional
 class CategoryServiceTest {
 
     @Autowired
@@ -44,13 +46,19 @@ class CategoryServiceTest {
     private Category category;
 
     @BeforeEach
-    public void init() {
-        category = new Category();
-        category.setName("CategoryServiceTest");
-        category.setType(OperationType.CREDIT);
+    public void beforeEach() {
+        category = new Category("CategoryServiceTest", OperationType.CREDIT);
 
         category = categoryService.create(category);
         AssertSqlCount.reset();
+    }
+
+    @AfterEach
+    public void afterEach() {
+        Optional<Category> categoryOptional = categoryService.findOne(category.getId());
+        if(categoryOptional.isPresent()) {
+            categoryService.delete(category.getId());
+        }
     }
 
     @Test
@@ -61,7 +69,7 @@ class CategoryServiceTest {
                 () -> assertEquals(expectedCategory.get(), category)
         );
         // select by first level Cache
-        assertSelectCount(0);
+        assertSelectCount(1);
     }
 
     @Test
@@ -90,108 +98,106 @@ class CategoryServiceTest {
         }
         Stream<Category> categories = categoryService.findByType(type);
         assertFalse(categories.findFirst().isPresent());
+
+        assertSelectCount(1);
     }
 
     @Test
     public void findByParent_withNullValue() throws Exception {
         Stream<Category> categories = categoryService.findByParentId(null);
         assertAll(
-                () -> assertNotNull(categories),
-                () -> assertEquals(categories.findFirst().get(), category)
+                () -> assertEquals(1, categories.count())
         );
         assertSelectCount(1);
     }
 
     @Test
     public void findByParent_withNullValue_multipleResult() throws Exception {
-        Category secondCategory = new Category();
-        secondCategory.setName("second");
-        secondCategory.setType(OperationType.CREDIT);
+        Category secondCategory = new Category("second", OperationType.CREDIT);
         categoryService.create(secondCategory);
+
+        AssertSqlCount.reset();
 
         Stream<Category> categories = categoryService.findByParentId(null);
         assertAll(
                 () -> assertNotNull(categories),
-                () -> assertEquals(categories.count(), 2)
+                () -> assertEquals(2, categories.count())
         );
+        assertSelectCount(1);
+
+        categoryService.delete(secondCategory.getId());
     }
 
     @Test
     public void findByParent_withNotNullValue() throws Exception {
-        Category childCategory = new Category();
-        childCategory.setName("childCategory");
-        childCategory.setType(OperationType.CREDIT);
-        childCategory.setParent(category);
-        categoryService.create(childCategory);
+        Category childCategory = new Category("childCategory", OperationType.CREDIT);
+        category.getChildren().add(childCategory);
+        categoryService.update(category);
+
+        AssertSqlCount.reset();
 
         Stream<Category> categories = categoryService.findByParentId(category.getId());
         assertAll(
                 () -> assertNotNull(categories),
-                () -> assertEquals(categories.findFirst().get(), childCategory)
+                () -> assertEquals(1, categories.count())
         );
+        assertSelectCount(1);
     }
 
     @Test
     public void create() throws Exception {
-        AssertSqlCount.reset();
 
-        Category newCategory = new Category();
-        newCategory.setName("newCategory");
-        newCategory.setType(OperationType.CREDIT);
+        Category newCategory = new Category("newCategory", OperationType.CREDIT);
         categoryService.create(newCategory);
 
         assertSelectCount(1);
+        assertInsertCount(1);
 
         Optional<Category> expectedCategory = categoryService.findOne(newCategory.getId());
         assertAll(
                 () -> assertTrue(expectedCategory.isPresent()),
                 () -> assertEquals(expectedCategory.get(), newCategory)
         );
+        categoryService.delete(newCategory.getId());
     }
 
     @Test
-    public void create_duplicateCategory() throws Exception {
-        Category duplicatedCategory = new Category();
-        duplicatedCategory.setName(category.getName());
-        duplicatedCategory.setType(category.getType());
-        duplicatedCategory.setParent(category.getParent());
-        Throwable exception = expectThrows(IllegalArgumentException.class, () -> categoryService.create(duplicatedCategory));
+    public void create_duplicateRootCategory() throws Exception {
+        Category duplicatedCategory = new Category(category.getName(), category.getType());
 
+        Throwable exception = expectThrows(IllegalArgumentException.class, () -> categoryService.create(duplicatedCategory));
         assertNotNull(exception);
     }
 
     @Test
     public void update() throws Exception {
-        AssertSqlCount.reset();
         String categoryName = "updateCategory";
         category.setName(categoryName);
         categoryService.update(category);
 
-        assertSelectCount(1);
+        assertEquals(categoryName, category.getName());
 
-        Optional<Category> expectedCategory = categoryService.findOne(category.getId());
-
-        assertAll(
-                () -> assertTrue(expectedCategory.isPresent()),
-                () -> assertEquals(expectedCategory.get(), category)
-        );
+        assertSelectCount(3);
+        assertUpdateCount(1);
     }
 
     @Test
     public void update_withEmptyId() throws Exception {
         Category newCategory = new Category();
-        Throwable exception = expectThrows(NullPointerException.class, () -> categoryService.update(newCategory));
 
+        Throwable exception = expectThrows(NullPointerException.class, () -> categoryService.update(newCategory));
         assertNotNull(exception);
+
+        assertSelectCount(1);
+        assertUpdateCount(0);
     }
 
     @Test
     public void delete() throws Exception {
-        AssertSqlCount.reset();
-
         categoryService.delete(category.getId());
 
-        assertSelectCount(0);
+        assertSelectCount(3);
+        assertDeleteCount(1);
 
         Optional<Category> deletedCategory = categoryService.findOne(category.getId());
 
@@ -201,10 +207,7 @@ class CategoryServiceTest {
     @Test
     public void delete_cascade() throws Exception {
 
-        Category childCategory = new Category();
-        childCategory.setName("childCategory");
-        childCategory.setType(OperationType.CREDIT);
-        categoryService.create(childCategory);
+        Category childCategory = new Category("childCategory", OperationType.CREDIT);
 
         category.getChildren().add(childCategory);
         categoryService.update(category);
@@ -213,7 +216,8 @@ class CategoryServiceTest {
 
         categoryService.delete(category.getId());
 
-        assertSelectCount(0);
+        assertSelectCount(4);
+        assertDeleteCount(1);
 
         Optional<Category> deletedCategory = categoryService.findOne(category.getId());
         assertFalse(deletedCategory.isPresent());
@@ -226,6 +230,9 @@ class CategoryServiceTest {
     public void delete_byNullValue() throws Exception {
         Throwable exception = expectThrows(NullPointerException.class, () -> categoryService.delete(null));
 
+        assertSelectCount(0);
+        assertDeleteCount(0);
+
         assertAll(
                 () -> assertNotNull(exception),
                 () -> assertEquals("Id cannot be null", exception.getMessage())
@@ -235,6 +242,9 @@ class CategoryServiceTest {
     @Test
     public void delete_byNotExistenceValue() throws Exception {
         Throwable exception = expectThrows(NullPointerException.class, () -> categoryService.delete(Long.MAX_VALUE));
+
+        assertSelectCount(1);
+        assertDeleteCount(0);
 
         assertAll(
                 () -> assertNotNull(exception),

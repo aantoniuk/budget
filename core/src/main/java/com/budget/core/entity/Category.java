@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter @Setter
-@NoArgsConstructor @RequiredArgsConstructor
 @EqualsAndHashCode(exclude = {"children"})
+@NoArgsConstructor @RequiredArgsConstructor
 @Entity
 public class Category {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +25,8 @@ public class Category {
     @NonNull
     @Enumerated(EnumType.STRING)
     private OperationType type;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Category parent;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
+    private Long parentId;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="parentId")
     private Set<Category> children = new HashSet<>();
 }

@@ -55,11 +55,7 @@ public class CategoryService {
     }
 
     private void checkExistenceByNameTypeParent(Category category) {
-        Long parentId = null;
-        if(category.getParent() != null) {
-            parentId = category.getParent().getId();
-        }
-        Optional<Category> existedCategory = categoryDao.findByNameAndTypeAndParentId(category.getName(), category.getType(), parentId);
+        Optional<Category> existedCategory = categoryDao.findByNameAndTypeAndParentId(category.getName(), category.getType(), category.getParentId());
         if(existedCategory.isPresent() && existedCategory.get().getId() != category.getId()) {
             String exMsg = String.format("Object already exists with name=%s, type=$s", category.getName(), category.getType().name());
             throw new IllegalArgumentException(exMsg);

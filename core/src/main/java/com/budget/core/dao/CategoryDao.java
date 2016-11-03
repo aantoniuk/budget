@@ -13,7 +13,7 @@ public interface CategoryDao extends Repository<Category, Long> {
 
     Stream<Category> findByType(OperationType type);
 
-    Stream<Category> findByParentId(Long parent);
+    Stream<Category> findByParentId(Long parentId);
     
     Optional<Category> findByNameAndTypeAndParentId(String name, OperationType type, Long parentId);
 
