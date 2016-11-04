@@ -64,34 +64,34 @@ public class UserControllerTest {
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
-    @Test
-    public void findAll_UsersFound_ShouldReturnRightResponseEntity() throws Exception {
-        Mockito.when(serviceMock.findAll()).thenReturn(Arrays.asList(userOptionalNotNullOne.get(), userOptionalNotNullTwo.get()));
+//    @Test
+//    public void findAll_UsersFound_ShouldReturnRightResponseEntity() throws Exception {
+//        Mockito.when(serviceMock.findAll()).thenReturn(Arrays.asList(userOptionalNotNullOne.get(), userOptionalNotNullTwo.get()));
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is((int) userOptionalNotNullOne.get().getId())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].login", Matchers.is(userOptionalNotNullOne.get().getLogin())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[0].enable", Matchers.is(userOptionalNotNullOne.get().isEnable())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", Matchers.is((int) userOptionalNotNullTwo.get().getId())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[1].login", Matchers.is(userOptionalNotNullTwo.get().getLogin())))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$[1].enable", Matchers.is(userOptionalNotNullTwo.get().isEnable())));
+//
+//        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
+//        Mockito.verifyNoMoreInteractions(serviceMock);
+//    }
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is((int) userOptionalNotNullOne.get().getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].login", Matchers.is(userOptionalNotNullOne.get().getLogin())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].enable", Matchers.is(userOptionalNotNullOne.get().isEnable())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", Matchers.is((int) userOptionalNotNullTwo.get().getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].login", Matchers.is(userOptionalNotNullTwo.get().getLogin())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].enable", Matchers.is(userOptionalNotNullTwo.get().isEnable())));
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
-        Mockito.verifyNoMoreInteractions(serviceMock);
-    }
-
-    @Test
-    public void findAll_UsersNotFound_ShouldReturnRightResponseException() throws Exception {
-        Mockito.when(serviceMock.findAll()).thenReturn(new ArrayList<>());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
-        Mockito.verifyNoMoreInteractions(serviceMock);
-    }
+//    @Test
+//    public void findAll_UsersNotFound_ShouldReturnRightResponseException() throws Exception {
+//        Mockito.when(serviceMock.findAll()).thenReturn(new ArrayList<>());
+//
+//        mockMvc.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.APPLICATION_JSON))
+//                .andExpect(MockMvcResultMatchers.status().isNotFound());
+//
+//        Mockito.verify(serviceMock, Mockito.times(1)).findAll();
+//        Mockito.verifyNoMoreInteractions(serviceMock);
+//    }
 
     @Test
     public void deleteById_UserIsFound_ShouldReturnRightResponseEntity() throws Exception {

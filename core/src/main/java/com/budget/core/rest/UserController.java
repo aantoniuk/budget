@@ -66,12 +66,12 @@ public class UserController {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<User>> getAll() throws ObjectNotFoundException {
-        List<User> userList = userService.findAll();
-        if (userList.isEmpty()) {
-            throw new ObjectNotFoundException("REST Controller: All User Objects have not been found.");
-        }
-        return new ResponseEntity<>(userList, HttpStatus.OK);
-    }
+//    @RequestMapping(method = RequestMethod.GET)
+//    public ResponseEntity<List<User>> getAll() throws ObjectNotFoundException {
+//        List<User> userList = userService.findAll();
+//        if (userList.isEmpty()) {
+//            throw new ObjectNotFoundException("REST Controller: All User Objects have not been found.");
+//        }
+//        return new ResponseEntity<>(userList, HttpStatus.OK);
+//    }
 }

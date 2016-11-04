@@ -5,13 +5,16 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter @Setter
 @EqualsAndHashCode(exclude = {"children"})
+@NoArgsConstructor @RequiredArgsConstructor
 @Entity
 public class UserCategory {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +25,10 @@ public class UserCategory {
     @Enumerated(EnumType.STRING)
     private OperationType type;
     private boolean enable = true;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private UserCategory parent;
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private Set<UserCategory> children;
     @NonNull
-    @ManyToOne
-    private User user;
+    private long userId;
+    private Long parentId;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="parentId")
+    private Set<UserCategory> children = new HashSet<>();
 }

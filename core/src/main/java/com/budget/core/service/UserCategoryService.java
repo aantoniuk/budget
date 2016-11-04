@@ -32,12 +32,12 @@ public class UserCategoryService {
         return userCategoryDao.findByUserIdAndParentId(userId, parentId);
     }
 
-    public Category create(UserCategory category) {
+    public UserCategory create(UserCategory category) {
         checkExistenceByNameTypeParent(category);
         return userCategoryDao.save(category);
     }
 
-    public Category update(UserCategory category) {
+    public UserCategory update(UserCategory category) {
         if(!findOne(category.getId()).isPresent()) {
             throw new NullPointerException("Object doesn't exist");
         }
@@ -56,14 +56,11 @@ public class UserCategoryService {
     }
 
     private void checkExistenceByNameTypeParent(UserCategory category) {
-        Long parentId = null;
-        if(category.getParent() != null) {
-            parentId = category.getParent().getId();
-        }
-        if(userCategoryDao.findByUserIdAndNameAndTypeAndParentId(category.getUser().getId(), category.getName(),
-                category.getType(), parentId).isPresent()) {
+        Optional<UserCategory> existedUserCategory = userCategoryDao.findByUserIdAndNameAndTypeAndParentId(
+                category.getUserId(), category.getName(), category.getType(), category.getParentId());
+        if(existedUserCategory.isPresent() && existedUserCategory.get().getId() != category.getId()) {
             String exMsg = String.format("Object already exists with user=%s, name=%s, type=$s",
-                    category.getUser().getId(),category.getName(), category.getType().name());
+                    category.getUserId(),category.getName(), category.getType().name());
             throw new IllegalArgumentException(exMsg);
         }
     }

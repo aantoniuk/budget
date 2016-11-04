@@ -18,7 +18,7 @@ public interface UserCategoryDao extends Repository<UserCategory, Long> {
 
     Optional<UserCategory> findByUserIdAndNameAndTypeAndParentId(Long userId, String name, OperationType type, Long parentId);
 
-    Category save(UserCategory userCategory);
+    UserCategory save(UserCategory userCategory);
 
     void delete(Long id);
 }
