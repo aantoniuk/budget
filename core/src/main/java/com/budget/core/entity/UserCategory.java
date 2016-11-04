@@ -25,10 +25,11 @@ public class UserCategory {
     @Enumerated(EnumType.STRING)
     private OperationType type;
     private boolean enable = true;
-    @NonNull
-    private long userId;
     private Long parentId;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="parentId")
     private Set<UserCategory> children = new HashSet<>();
+    @NonNull
+    @Column(updatable = false)
+    private long userId;
 }

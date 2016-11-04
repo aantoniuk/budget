@@ -46,10 +46,11 @@ public class UserService {
             throw new IllegalArgumentException("User already exists with login:" + user.getLogin());
             // throw new NullPointerException("User already exists with login:" + user.getLogin());
         }
-
         User savedUser = userDao.save(user);
+
         createUserCurrencies(savedUser);
-        createUserCategories(savedUser);
+        createUserCategories(savedUser.getId());
+
         return savedUser;
     }
 
@@ -60,10 +61,11 @@ public class UserService {
             //throw new IllegalArgumentException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
             throw new NullPointerException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
         }
-        optionalUser.get().setLogin(user.getLogin());
-        optionalUser.get().setEnable(user.isEnable());
+        User updatableUser = optionalUser.get();
+        updatableUser.setPassword(user.getPassword());
+        updatableUser.setEnable(user.isEnable());
 
-        return userDao.save(optionalUser.get());
+        return userDao.save(updatableUser);
     }
 
     @Transactional
@@ -73,22 +75,21 @@ public class UserService {
             // throw new IllegalArgumentException("User doesn't exist with id:" + id);
             throw new NullPointerException("User doesn't exist with id:" + id);
         }
-
         userDao.delete(id);
 
-        deleteUserCategories(userOptional.get());
-        deleteUserCurrencies(userOptional.get());
+        deleteUserCategories(id);
+        deleteUserCurrencies(id);
 
         return userOptional.get();
     }
 
-    private void deleteUserCategories(User user) {
-        userCategoryService.findByParentId(user.getId(), null).
+    private void deleteUserCategories(Long userId) {
+        userCategoryService.findByParentId(userId, null).
                 forEach(item -> userCategoryService.delete(item.getId()));
     }
 
-    private void deleteUserCurrencies(User user) {
-        userCurrencyService.findByUser(user.getId()).forEach(item -> userCurrencyService.delete(item.getId()));
+    private void deleteUserCurrencies(Long userId) {
+        userCurrencyService.findByUser(userId).forEach(item -> userCurrencyService.delete(item.getId()));
     }
 
     private void createUserCurrencies(User user) {
@@ -101,17 +102,17 @@ public class UserService {
         });
     }
 
-    private void createUserCategories(User user) {
+    private void createUserCategories(Long userId) {
         categoryService.findByParentId(null).
-                forEach(item -> createUserCategory(user, item, null));
+                forEach(item -> createUserCategory(userId, item, null));
     }
 
-    private void createUserCategory(User user, Category category, UserCategory parentUserCategory) {
-        UserCategory userCategory = new UserCategory(category.getName(), category.getType(), user.getId());
+    private void createUserCategory(Long userId, Category category, UserCategory parentUserCategory) {
+        UserCategory userCategory = new UserCategory(category.getName(), category.getType(), userId);
         userCategory.setParentId(parentUserCategory.getId());
 
         userCategoryService.create(userCategory);
-        category.getChildren().forEach(item -> createUserCategory(user, item, userCategory));
+        category.getChildren().forEach(item -> createUserCategory(userId, item, userCategory));
     }
 }
 

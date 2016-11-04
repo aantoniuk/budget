@@ -1,5 +1,6 @@
 package com.budget.core.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 
 @Getter @Setter
 @NoArgsConstructor @RequiredArgsConstructor
+@EqualsAndHashCode
 @Entity
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

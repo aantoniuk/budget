@@ -77,7 +77,7 @@ public class UserCategoryServiceTest {
         Optional<UserCategory> expectedUserCategory = userCategoryService.findOne(userCategory.getId());
         assertAll(
                 () -> assertTrue(expectedUserCategory.isPresent()),
-                () -> assertEquals(expectedUserCategory.get(), userCategory)
+                () -> assertEquals(userCategory, expectedUserCategory.get())
         );
         assertSelectCount(1);
     }
@@ -94,7 +94,7 @@ public class UserCategoryServiceTest {
         Stream<UserCategory> expectedUserCategories = userCategoryService.findByType(user.getId(), userCategory.getType());
         assertAll(
                 () -> assertNotNull(expectedUserCategories),
-                () -> assertEquals(expectedUserCategories.findFirst().get(), userCategory)
+                () -> assertEquals(userCategory, expectedUserCategories.findFirst().get())
         );
 
         assertSelectCount(1);
