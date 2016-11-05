@@ -1,25 +1,23 @@
 package com.budget.core.entity;
 
 import com.budget.core.Utils.OperationType;
-import lombok.NonNull;
+import lombok.*;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
+@Getter @Setter
+@EqualsAndHashCode
+@NoArgsConstructor @RequiredArgsConstructor
 @MappedSuperclass
 abstract class BaseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
+    private long id;
     @NonNull
-    protected String name;
+    private String name;
     @NonNull
     @Enumerated(EnumType.STRING)
-    protected OperationType type;
-    protected boolean enable = true;
-    protected Long parentId;
+    private OperationType type;
+    private boolean enable = true;
+    private Long parentId;
 }

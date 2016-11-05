@@ -172,22 +172,22 @@ public class CategoryControllerTest {
 //        Mockito.verifyNoMoreInteractions(serviceMock);
 //    }
 
-    @Before
-    public void setUp() throws Exception {
-        Category localCategory = new Category();
-        localCategory.setName("Drugs");
-        localCategory.setId(CATEGORY_ID_LONG);
-        categoryOptionalNotNullOne = Optional.of(localCategory);
-
-        localCategory.setName("Family");
-        localCategory.setId(CATEGORY_ID_LONG + 3);
-        categoryOptionalNotNullTwo = Optional.of(localCategory);
-
-        categoryOptionalNull = Optional.ofNullable(null);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
+//    @Before
+//    public void setUp() throws Exception {
+//        Category localCategory = new Category();
+//        localCategory.setName("Drugs");
+//        localCategory.setId(CATEGORY_ID_LONG);
+//        categoryOptionalNotNullOne = Optional.of(localCategory);
+//
+//        localCategory.setName("Family");
+//        localCategory.setId(CATEGORY_ID_LONG + 3);
+//        categoryOptionalNotNullTwo = Optional.of(localCategory);
+//
+//        categoryOptionalNull = Optional.ofNullable(null);
+//    }
+//
+//    @After
+//    public void tearDown() throws Exception {
+//
+//    }
 }
