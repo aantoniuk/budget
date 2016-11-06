@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -27,7 +28,7 @@ public class UserCategoryService extends BaseCategoryService<UserCategory> {
     }
 
     public Stream<UserCategory> findByParentId(@NonNull Long parentId) {
-        return findByParentId(null, parentId);
+        return userCategoryDao.findByParentId(parentId);
     }
 
     public Stream<UserCategory> findByParentId(Long userId, Long parentId) {
@@ -68,7 +69,7 @@ public class UserCategoryService extends BaseCategoryService<UserCategory> {
     void checkExistence(UserCategory userCategory) {
         Optional<UserCategory> existedUserCategory = userCategoryDao.findByUserIdAndNameAndTypeAndParentId(
                 userCategory.getUserId(), userCategory.getName(), userCategory.getType(), userCategory.getParentId());
-        if(existedUserCategory.isPresent() && existedUserCategory.get().getId() != userCategory.getId()) {
+        if(existedUserCategory.isPresent() && !Objects.equals(existedUserCategory.get().getId(), userCategory.getId())) {
             String exMsg = String.format("Object already exists with user=%s, name=%s, type=$s",
                     userCategory.getUserId(),userCategory.getName(), userCategory.getType().name());
             throw new IllegalArgumentException(exMsg);

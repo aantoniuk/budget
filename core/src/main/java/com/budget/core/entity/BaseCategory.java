@@ -12,7 +12,7 @@ import javax.persistence.*;
 public abstract class BaseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NonNull
     private String name;
     @Enumerated(EnumType.STRING)
@@ -23,7 +23,11 @@ public abstract class BaseCategory {
     public BaseCategory(@NonNull String name, OperationType type, Boolean enable, Long parentId) {
         this.name = name;
         this.type = type;
-        this.enable = enable;
+        if(enable == null) {
+            this.enable = Boolean.TRUE;
+        } else {
+            this.enable = enable;
+        }
         this.parentId = parentId;
     }
 }

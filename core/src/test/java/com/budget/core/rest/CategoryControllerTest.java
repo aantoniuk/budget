@@ -39,7 +39,7 @@ public class CategoryControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/categories/{id}", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(categoryOptionalNotNullOne.get().getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findOne(CATEGORY_ID_LONG);
@@ -90,7 +90,7 @@ public class CategoryControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/categories/{id}", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(categoryOptionalNotNullOne.get().getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
 
         Mockito.verify(serviceMock, Mockito.times(1)).findOne(CATEGORY_ID_LONG);

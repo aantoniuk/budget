@@ -5,7 +5,10 @@ import com.budget.core.entity.BaseCategory;
 import lombok.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 abstract class BaseCategoryService<T extends BaseCategory> extends AbstractService<T>{
@@ -15,8 +18,8 @@ abstract class BaseCategoryService<T extends BaseCategory> extends AbstractServi
     abstract Stream<T> findByParentId(Long parentId);
 
     public Stream<T> findAllByParentId(@NonNull Long parentId) {
-        Stream<T> subCategories = findByParentId(parentId);
-        return Stream.concat(subCategories, subCategories.flatMap(t -> findAllByParentId(t.getParentId())));
+        List<T> subCategories = findByParentId(parentId).collect(Collectors.toList());
+        return Stream.concat(subCategories.stream(), subCategories.stream().flatMap(t -> findAllByParentId(t.getId())));
     }
 
     @Transactional
@@ -98,8 +101,7 @@ abstract class BaseCategoryService<T extends BaseCategory> extends AbstractServi
     public T updateParent(@NonNull Long id, Long parentId) {
         T category = find(id);
         // nothing to update
-        if(parentId == null && category.getParentId() == null ||
-                parentId != null && parentId.equals(category.getParentId())) {
+        if(Objects.equals(parentId, category.getParentId())) {
             return category;
         }
         if(parentId != null) {
