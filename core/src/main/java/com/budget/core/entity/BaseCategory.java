@@ -7,17 +7,23 @@ import javax.persistence.*;
 
 @Getter @Setter
 @EqualsAndHashCode
-@NoArgsConstructor @RequiredArgsConstructor
+@NoArgsConstructor
 @MappedSuperclass
-abstract class BaseCategory {
+public abstract class BaseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NonNull
     private String name;
-    @NonNull
     @Enumerated(EnumType.STRING)
     private OperationType type;
-    private boolean enable = true;
+    private Boolean enable;
     private Long parentId;
+
+    public BaseCategory(@NonNull String name, OperationType type, Boolean enable, Long parentId) {
+        this.name = name;
+        this.type = type;
+        this.enable = enable;
+        this.parentId = parentId;
+    }
 }

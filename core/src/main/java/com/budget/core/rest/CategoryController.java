@@ -27,11 +27,11 @@ public class CategoryController {
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/update", method = RequestMethod.PUT)
-    public ResponseEntity<Category> update(@RequestBody Category category) {
-        Category savedCategory = categoryService.update(category);
-        return new ResponseEntity<>(savedCategory, HttpStatus.OK);
-    }
+//    @RequestMapping(path = "/update", method = RequestMethod.PUT)
+//    public ResponseEntity<Category> update(@RequestBody Category category) {
+//        Category savedCategory = categoryService.update(category);
+//        return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+//    }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     public ResponseEntity<Category> remove(@PathVariable("id") long id) throws ObjectNotFoundException {

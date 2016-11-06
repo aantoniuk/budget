@@ -108,7 +108,7 @@ public class UserService {
     }
 
     private void createUserCategory(Long userId, Category category, UserCategory parentUserCategory) {
-        UserCategory userCategory = new UserCategory(category.getName(), category.getType(), userId);
+        UserCategory userCategory = UserCategory.builder().name(category.getName()).type(category.getType()).userId(userId).build();
         userCategory.setParentId(parentUserCategory.getId());
 
         userCategoryService.create(userCategory);

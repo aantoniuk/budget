@@ -2,16 +2,18 @@ package com.budget.core.service;
 
 import com.budget.core.Utils.OperationType;
 import com.budget.core.dao.UserCategoryDao;
-import com.budget.core.entity.Category;
 import com.budget.core.entity.UserCategory;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class UserCategoryService {
+public class UserCategoryService extends BaseCategoryService<UserCategory> {
 
     private final UserCategoryDao userCategoryDao;
 
@@ -20,49 +22,61 @@ public class UserCategoryService {
         this.userCategoryDao = userCategoryDao;
     }
 
-    public Optional<UserCategory> findOne(Long id) {
-        return userCategoryDao.findOne(id);
+    public Stream<UserCategory> findByType(@NonNull Long userId, @NonNull OperationType type) {
+        return userCategoryDao.findByUserIdAndType(userId, type);
     }
 
-    public Stream<UserCategory> findByType(Long userId, OperationType type) {
-        return userCategoryDao.findByUserIdAndType(userId, type);
+    public Stream<UserCategory> findByParentId(@NonNull Long parentId) {
+        return findByParentId(null, parentId);
     }
 
     public Stream<UserCategory> findByParentId(Long userId, Long parentId) {
         return userCategoryDao.findByUserIdAndParentId(userId, parentId);
     }
 
+    @Override
+    @Transactional
     public UserCategory create(UserCategory category) {
-        checkExistenceByNameTypeParent(category);
-        return userCategoryDao.save(category);
+        // root user category
+        if(category.getParentId() == null) {
+            if(category.getUserId() == null) {
+                throw new NullPointerException("UserId can't be empty");
+            }
+        } else {
+            // sub user category
+            UserCategory parent = findParent(category.getParentId());
+            if(category.getUserId() == null) {
+                category.setUserId(parent.getUserId());
+            } else if(!category.getUserId().equals(parent.getUserId())) {
+                    throw new IllegalArgumentException("UserId of Category and Parent Category should be the same");
+            }
+        }
+        return super.create(category);
     }
 
-    public UserCategory update(UserCategory category) {
-        if(!findOne(category.getId()).isPresent()) {
-            throw new NullPointerException("Object doesn't exist");
+    @Transactional
+    public UserCategory updateParent(@NonNull Long id, Long parentId) {
+        UserCategory category = find(id);
+        Optional<UserCategory> parentOpt = findOne(parentId);
+        if(parentOpt.isPresent() && !parentOpt.get().getUserId().equals(category.getUserId())) {
+            throw new IllegalArgumentException("User can't be different in Sub Category and Parent Category");
         }
-        checkExistenceByNameTypeParent(category);
-        return userCategoryDao.save(category);
+        return super.updateParent(id, parentId);
     }
 
-    public void delete(Long id) {
-        if(id == null) {
-            throw new NullPointerException("Id cannot be null");
-        }
-        if(!findOne(id).isPresent()) {
-            throw new NullPointerException("Object doesn't exist");
-        }
-        userCategoryDao.delete(id);
-    }
-
-    private void checkExistenceByNameTypeParent(UserCategory category) {
+    @Override
+    void checkExistence(UserCategory userCategory) {
         Optional<UserCategory> existedUserCategory = userCategoryDao.findByUserIdAndNameAndTypeAndParentId(
-                category.getUserId(), category.getName(), category.getType(), category.getParentId());
-        if(existedUserCategory.isPresent() && existedUserCategory.get().getId() != category.getId()) {
+                userCategory.getUserId(), userCategory.getName(), userCategory.getType(), userCategory.getParentId());
+        if(existedUserCategory.isPresent() && existedUserCategory.get().getId() != userCategory.getId()) {
             String exMsg = String.format("Object already exists with user=%s, name=%s, type=$s",
-                    category.getUserId(),category.getName(), category.getType().name());
+                    userCategory.getUserId(),userCategory.getName(), userCategory.getType().name());
             throw new IllegalArgumentException(exMsg);
         }
     }
 
+    @Override
+    CrudRepository<UserCategory, Long> getDao() {
+        return userCategoryDao;
+    }
 }

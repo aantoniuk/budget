@@ -2,7 +2,6 @@ package com.budget.core.entity;
 
 import com.budget.core.Utils.OperationType;
 import lombok.*;
-import lombok.experimental.NonFinal;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -20,8 +19,9 @@ public class UserCategory extends BaseCategory{
     @Column(updatable = false)
     private Long userId;
 
-    public UserCategory(String name, OperationType type, @NonNull Long userId) {
-        super(name, type);
+    @Builder
+    public UserCategory(String name, OperationType type, Boolean enable, Long parentId, Long userId) {
+        super(name, type, enable, parentId);
         this.userId = userId;
     }
 }

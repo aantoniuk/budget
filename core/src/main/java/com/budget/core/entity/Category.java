@@ -1,10 +1,7 @@
 package com.budget.core.entity;
 
 import com.budget.core.Utils.OperationType;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,14 +12,15 @@ import java.util.Set;
 
 @Getter @Setter
 @EqualsAndHashCode(callSuper = true, exclude = {"children"})
-@NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor()
 @Entity
 public class Category extends BaseCategory{
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="parentId")
     private Set<Category> children = new HashSet<>();
 
-    public Category(String name, OperationType type) {
-        super(name, type);
+    @Builder
+    public Category(String name, OperationType type, Boolean enable, Long parentId) {
+        super(name, type, enable, parentId);
     }
 }

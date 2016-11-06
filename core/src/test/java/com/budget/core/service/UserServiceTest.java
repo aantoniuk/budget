@@ -106,9 +106,9 @@ public class UserServiceTest {
 
     @Test
     public void create_withCategoryAndCurrence() throws Exception {
-        Category category = new Category("category", OperationType.CREDIT);
+        Category category = Category.builder().name("category").type(OperationType.CREDIT).build();
         categoryService.create(category);
-        Category subCategory = new Category("subCategory", OperationType.CREDIT);
+        Category subCategory = Category.builder().name("subCategory").type(OperationType.CREDIT).build();
 
         Currency currency = new Currency("currency", 1L);
         currencyService.create(currency);
