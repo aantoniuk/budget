@@ -23,28 +23,28 @@ public class UserController {
         this.userService = userService;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<User> create(@RequestBody User user) throws ObjectAlreadyExists {
-        Optional<User> localUser = userService.findByLogin(user.getLogin());
-        if (localUser.isPresent()) {
-            throw new ObjectAlreadyExists("REST Controller: Object User with id " + localUser.get().getId() +" is already exist.");
-        }
-        User userForResponse = userService.update(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
-    }
+//    @RequestMapping(method = RequestMethod.POST)
+//    public ResponseEntity<User> create(@RequestBody User user) throws ObjectAlreadyExists {
+//        Optional<User> localUser = userService.findByLogin(user.getLogin());
+//        if (localUser.isPresent()) {
+//            throw new ObjectAlreadyExists("REST Controller: Object User with id " + localUser.get().getId() +" is already exist.");
+//        }
+//        User userForResponse = userService.update(user);
+//        return new ResponseEntity<>(user, HttpStatus.CREATED);
+//    }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public ResponseEntity<User> update(@PathVariable("id") Long id, @RequestBody User user) throws ObjectNotFoundException {
-        Optional<User> localUser = userService.findOne(id);
-        if(!localUser.isPresent()) {
-            throw new ObjectNotFoundException("REST Controller: Object User with id " + id +" has not been found for UPDATE.");
-        }
-        if (user.getLogin() != null) {
-            localUser.get().setLogin(user.getLogin());
-        }
-        userService.update(user);
-        return new ResponseEntity<>(localUser.get(), HttpStatus.OK);
-    }
+//    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+//    public ResponseEntity<User> update(@PathVariable("id") Long id, @RequestBody User user) throws ObjectNotFoundException {
+//        Optional<User> localUser = userService.findOne(id);
+//        if(!localUser.isPresent()) {
+//            throw new ObjectNotFoundException("REST Controller: Object User with id " + id +" has not been found for UPDATE.");
+//        }
+//        if (user.getLogin() != null) {
+//            localUser.get().setLogin(user.getLogin());
+//        }
+//        userService.update(user);
+//        return new ResponseEntity<>(localUser.get(), HttpStatus.OK);
+//    }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     public ResponseEntity<User> remove(@PathVariable("id") long id) throws ObjectNotFoundException {

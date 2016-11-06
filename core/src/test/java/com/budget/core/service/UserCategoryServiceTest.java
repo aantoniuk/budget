@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.*;
         DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class
 })
-@Sql(executionPhase= Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts="classpath:data-h2.sql")
 public class UserCategoryServiceTest {
     @Autowired
     private UserService userService;

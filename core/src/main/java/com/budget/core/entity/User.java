@@ -18,10 +18,10 @@ import javax.persistence.Id;
 @Entity
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NonNull
     private String login;
     @NonNull
     private String password;
-    private boolean enable = true;
+    private Boolean enable = true;
 }

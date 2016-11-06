@@ -24,7 +24,7 @@ public abstract class BaseCategory {
         this.name = name;
         this.type = type;
         if(enable == null) {
-            this.enable = Boolean.TRUE;
+            this.enable = true;
         } else {
             this.enable = enable;
         }

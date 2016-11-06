@@ -5,7 +5,9 @@ import com.budget.core.entity.Category;
 import com.budget.core.entity.User;
 import com.budget.core.entity.UserCategory;
 import com.budget.core.entity.UserCurrency;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService extends AbstractService<User> {
 
     private final UserDao userDao;
     private final CategoryService categoryService;
@@ -35,10 +37,6 @@ public class UserService {
         return userDao.findByLogin(login);
     }
 
-    public Optional<User> findOne(Long id) {
-        return userDao.findOne(id);
-    }
-
     @Transactional
     public User create(User user) {
         Optional userOptional = findByLogin(user.getLogin());
@@ -55,32 +53,43 @@ public class UserService {
     }
 
     @Transactional
-    public User update(User user) {
-        Optional<User> optionalUser = findOne(user.getId());
+    public User updatePassword(@NonNull Long userId, @NonNull String password) {
+        Optional<User> optionalUser = findOne(userId);
         if (!optionalUser.isPresent()) {
             //throw new IllegalArgumentException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
-            throw new NullPointerException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
+            throw new NullPointerException("User doesn't exist with id:" + userId);
         }
         User updatableUser = optionalUser.get();
-        updatableUser.setPassword(user.getPassword());
-        updatableUser.setEnable(user.isEnable());
+        updatableUser.setPassword(password);
 
         return userDao.save(updatableUser);
     }
 
     @Transactional
-    public User delete(long id) {
+    public User updateEnable(@NonNull Long userId, @NonNull Boolean enable) {
+        Optional<User> optionalUser = findOne(userId);
+        if (!optionalUser.isPresent()) {
+            //throw new IllegalArgumentException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
+            throw new NullPointerException("User doesn't exist with id:" + userId);
+        }
+        User updatableUser = optionalUser.get();
+        updatableUser.setEnable(enable);
+
+        return userDao.save(updatableUser);
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long id) {
         Optional<User> userOptional = findOne(id);
         if (!userOptional.isPresent()) {
             // throw new IllegalArgumentException("User doesn't exist with id:" + id);
             throw new NullPointerException("User doesn't exist with id:" + id);
         }
-        userDao.delete(id);
-
         deleteUserCategories(id);
         deleteUserCurrencies(id);
 
-        return userOptional.get();
+        userDao.delete(id);
     }
 
     private void deleteUserCategories(Long userId) {
@@ -109,10 +118,16 @@ public class UserService {
 
     private void createUserCategory(Long userId, Category category, UserCategory parentUserCategory) {
         UserCategory userCategory = UserCategory.builder().name(category.getName()).type(category.getType()).userId(userId).build();
-        userCategory.setParentId(parentUserCategory.getId());
-
+        if(parentUserCategory != null) {
+            userCategory.setParentId(parentUserCategory.getId());
+        }
         userCategoryService.create(userCategory);
         category.getChildren().forEach(item -> createUserCategory(userId, item, userCategory));
+    }
+
+    @Override
+    CrudRepository<User, Long> getDao() {
+        return userDao;
     }
 }
 

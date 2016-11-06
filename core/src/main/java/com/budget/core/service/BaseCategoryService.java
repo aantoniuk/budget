@@ -125,7 +125,7 @@ abstract class BaseCategoryService<T extends BaseCategory> extends AbstractServi
         return getDao().save(category);
     }
 
-    protected T find(@NonNull Long id) {
+    T find(@NonNull Long id) {
         Optional<T> categoryOpt = findOne(id);
         if(!categoryOpt.isPresent()) {
             throw new NullPointerException("Category isn't found by id=" + id);
@@ -133,7 +133,7 @@ abstract class BaseCategoryService<T extends BaseCategory> extends AbstractServi
         return categoryOpt.get();
     }
 
-    protected T findParent(@NonNull Long parentId) {
+    T findParent(@NonNull Long parentId) {
         T parent = getDao().findOne(parentId);
         if (parent == null) {
             throw new NullPointerException("Parent Category isn't found by id=" + parentId);
