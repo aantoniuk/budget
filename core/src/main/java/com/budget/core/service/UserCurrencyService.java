@@ -1,15 +1,20 @@
 package com.budget.core.service;
 
 import com.budget.core.dao.UserCurrencyDao;
+import com.budget.core.entity.Currency;
 import com.budget.core.entity.UserCurrency;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class UserCurrencyService {
+public class UserCurrencyService extends AbstractService<UserCurrency> {
 
     private final UserCurrencyDao userCurrencyDao;
 
@@ -18,49 +23,60 @@ public class UserCurrencyService {
         this.userCurrencyDao = userCurrencyDao;
     }
 
-    public Stream<UserCurrency> findAll() {
-        return userCurrencyDao.findAll();
+    @Override
+    CrudRepository<UserCurrency, Long> getDao() {
+        return userCurrencyDao;
+    }
+
+    public Stream<UserCurrency> findAllByUserId(Long userId) {
+        return userCurrencyDao.findAllByUserId(userId);
+    }
+
+    @Transactional
+    public UserCurrency create(UserCurrency userCurrency) {
+        checkExistenceByUserCurrency(userCurrency);
+        return userCurrencyDao.save(userCurrency);
     }
 
     public UserCurrency save(UserCurrency userCurrency) {
         return userCurrencyDao.save(userCurrency);
     }
 
-    public void delete(Long id) {
-        if(id == null) {
-            throw new NullPointerException("Id cannot be null");
+    @Transactional
+    public void delete(Long userCurrencyId) {
+        Optional<UserCurrency> userCurrencyForDeletion = findOne(userCurrencyId);
+        if (!userCurrencyForDeletion.isPresent()) {
+            throw new NullPointerException("UserCurrency doesn't exist with id: " + userCurrencyId);
         }
-        if(!findOne(id).isPresent()) {
-            throw new NullPointerException("Object doesn't exist");
-        }
-        userCurrencyDao.delete(id);
+        userCurrencyDao.delete(userCurrencyId);
     }
 
-    public Optional<UserCurrency> findOne(Long id) {
-        return userCurrencyDao.findOne(id);
+    @Transactional
+    public UserCurrency updateCurrency(@NonNull Long userCurrencyId, @NonNull Currency currency) {
+        Optional<UserCurrency> userCurrencyForUpdate = findOne(userCurrencyId);
+        if (!userCurrencyForUpdate.isPresent()) {
+            throw new NullPointerException("UserCurrency doesn't exist with id: " + userCurrencyId);
+        } else if (userCurrencyForUpdate.get().getCurrency().equals(currency)) {
+            throw new IllegalArgumentException("Exact same object already exists. Nothing to update.");
+        }
+
+        UserCurrency updatableCurrency = userCurrencyForUpdate.get();
+        updatableCurrency.setCurrency(currency);
+        return userCurrencyDao.save(updatableCurrency);
     }
 
-    public UserCurrency create(UserCurrency userCurrency) {
-        checkExistenceByUserAndCurrency(userCurrency);
+    @Transactional
+    public UserCurrency updateValue(@NotNull UserCurrency userCurrency) {
+        Optional<UserCurrency> userCurrencyForUpdate = findOne(userCurrency.getId());
+        if (!userCurrencyForUpdate.isPresent()) {
+            throw new NullPointerException("UserCurrency doesn't exist with id: " + userCurrency.getId());
+        } else if (userCurrencyForUpdate.get().equals(userCurrency)) {
+            throw new IllegalArgumentException("Exact same object already exists. Nothing to update.");
+        }
         return userCurrencyDao.save(userCurrency);
     }
 
-    public UserCurrency update(UserCurrency userCurrency) {
-        if(!findOne(userCurrency.getId()).isPresent()) {
-            throw new NullPointerException("Object doesn't exist");
-        }
-        return userCurrencyDao.save(userCurrency);
-    }
-
-    public Stream<UserCurrency> findByUser(Long userId) {
-        return userCurrencyDao.findByUserId(userId);
-    }
-
-    public Stream<UserCurrency> findByCurrency(Long currencyId) {
-        return userCurrencyDao.findByCurrencyId(currencyId);
-    }
-
-    private void checkExistenceByUserAndCurrency(UserCurrency userCurrency) {
+    private void checkExistenceByUserCurrency(UserCurrency userCurrency) {
         if(userCurrencyDao.findByUserIdAndCurrencyId(userCurrency.getUser().getId(), userCurrency.getCurrency().getId()).isPresent()) {
             String exMsg = String.format("Object already exists with user_name=%s, currency_name=$s",
                     userCurrency.getUser().getLogin(), userCurrency.getCurrency().getName());

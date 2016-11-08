@@ -98,7 +98,7 @@ public class UserService extends AbstractService<User> {
     }
 
     private void deleteUserCurrencies(Long userId) {
-        userCurrencyService.findByUser(userId).forEach(item -> userCurrencyService.delete(item.getId()));
+        userCurrencyService.findAllByUserId(userId).forEach(item -> userCurrencyService.delete(item.getId()));
     }
 
     private void createUserCurrencies(User user) {

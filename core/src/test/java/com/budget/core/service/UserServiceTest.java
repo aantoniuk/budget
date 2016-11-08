@@ -165,7 +165,7 @@ public class UserServiceTest {
                 () -> assertEquals(newUser.getId(), userSubCategories.get(0).getUserId())
         );
 
-        List<UserCurrency> userCurrencies = userCurrencyService.findByUser(newUser.getId()).collect(Collectors.toList());
+        List<UserCurrency> userCurrencies = userCurrencyService.findAllByUserId(newUser.getId()).collect(Collectors.toList());
         // check currency
         assertAll(
                 () -> assertNotNull(userCurrencies),
@@ -225,7 +225,7 @@ public class UserServiceTest {
 
         Optional<User> userOpt = userService.findOne(newUser.getId());
         Stream<UserCategory> categoryStream = userCategoryService.findByParentId(newUser.getId(), null);
-        Stream<UserCurrency> currencyStream = userCurrencyService.findByUser(newUser.getId());
+        Stream<UserCurrency> currencyStream = userCurrencyService.findAllByUserId(newUser.getId());
 
         assertAll(
                 () -> assertFalse(userOpt.isPresent()),
