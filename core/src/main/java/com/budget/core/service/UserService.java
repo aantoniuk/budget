@@ -11,7 +11,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -98,14 +97,16 @@ public class UserService extends AbstractService<User> {
     }
 
     private void deleteUserCurrencies(Long userId) {
-        userCurrencyService.findAllByUserId(userId).forEach(item -> userCurrencyService.delete(item.getId()));
+        userCurrencyService.findByUserId(userId).forEach(item -> userCurrencyService.delete(item.getId()));
     }
 
     private void createUserCurrencies(User user) {
         currencyService.findAll().forEach(item -> {
             UserCurrency userCurrency = new UserCurrency();
-            userCurrency.setUser(user);
-            userCurrency.setCurrency(item);
+            userCurrency.setUserId(user.getId());
+            // Default ?
+            userCurrency.setValue(Float.MAX_VALUE);
+            userCurrency.setCurrencyId(item.getId());
 
             userCurrencyService.save(userCurrency);
         });

@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount.assertDeleteCount;
@@ -66,8 +65,8 @@ class WalletServiceTest {
             localCurrencyTwo = new Currency("YYY", 159L);
 
             localUserCurrencyOne = new UserCurrency();
-            localUserCurrencyOne.setCurrency(localCurrencyOne);
-            localUserCurrencyOne.setUser(localUserOne);
+            localUserCurrencyOne.setCurrencyId(localCurrencyOne.getId());
+            localUserCurrencyOne.setUserId(localUserOne.getId());
             localUserCurrencyOne.setEnable(true);
 
             localWalletOne = new Wallet("serhii's", localUserOne, localCurrencyOne);

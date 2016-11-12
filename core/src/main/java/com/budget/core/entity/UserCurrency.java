@@ -14,8 +14,6 @@ public class UserCurrency {
     private long id;
     private Float value;
     private Boolean enable = true;
-    @ManyToOne
-    private User user;
-    @ManyToOne
-    private Currency currency;
+    private Long userId;
+    private Long currencyId;
 }

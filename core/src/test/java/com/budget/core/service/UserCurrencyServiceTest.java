@@ -55,15 +55,15 @@ class UserCurrencyServiceTest {
             currencyService.create(localCurrencyTwo);
 
             localUserCurrencyOne = new UserCurrency();
-            localUserCurrencyOne.setUser(localUserOne);
+            localUserCurrencyOne.setUserId(localUserOne.getId());
             localUserCurrencyOne.setValue(26.5f);
-            localUserCurrencyOne.setCurrency(localCurrencyOne);
+            localUserCurrencyOne.setCurrencyId(localCurrencyOne.getId());
             localUserCurrencyOne = userCurrencyService.create(localUserCurrencyOne);
 
             localUserCurrencyTwo = new UserCurrency();
-            localUserCurrencyTwo.setUser(localUserOne);
+            localUserCurrencyTwo.setUserId(localUserOne.getId());
             localUserCurrencyTwo.setValue(13.9f);
-            localUserCurrencyTwo.setCurrency(localCurrencyTwo);
+            localUserCurrencyTwo.setCurrencyId(localCurrencyTwo.getId());
             localUserCurrencyTwo = userCurrencyService.create(localUserCurrencyTwo);
         }
         AssertSqlCount.reset();
@@ -73,7 +73,7 @@ class UserCurrencyServiceTest {
     @AfterEach
     public void afterEach() {
         logger.info("==========\nStart of afterEach() method\n==========");
-        Stream<UserCurrency> userCurrencyForDeletion = userCurrencyService.findAllByUserId(localUserOne.getId());
+        Stream<UserCurrency> userCurrencyForDeletion = userCurrencyService.findByUserId(localUserOne.getId());
         userCurrencyForDeletion.map(UserCurrency::getId).forEach(userCurrencyService::delete);
 
         Stream<Currency> currencyForDeletion = currencyService.findAll();
@@ -90,10 +90,10 @@ class UserCurrencyServiceTest {
         assertAll(
                 () -> assertTrue(actualUserCurrency.isPresent(), "Actual UserCurrency must exists, but it's not that"),
                 () -> assertEquals(localUserCurrencyOne, actualUserCurrency.get()),
-                () -> assertEquals(localCurrencyOne, actualUserCurrency.get().getCurrency()),
-                () -> assertEquals(localUserOne, actualUserCurrency.get().getUser())
+                () -> assertEquals(localCurrencyOne, currencyService.findOne(actualUserCurrency.get().getCurrencyId()).get()),
+                () -> assertEquals(localUserOne, userService.findOne(actualUserCurrency.get().getUserId()).get())
         );
-        assertSelectCount(1);
+        assertSelectCount(3);
     }
 
     @Test
@@ -104,16 +104,15 @@ class UserCurrencyServiceTest {
 
     @Test
     public void findAllByUserId_ifExists() throws Exception {
-        Stream<UserCurrency> userCurrencies = userCurrencyService.findAllByUserId(localUserOne.getId());
+        Stream<UserCurrency> userCurrencies = userCurrencyService.findByUserId(localUserOne.getId());
         assertEquals(Arrays.asList(localUserCurrencyOne, localUserCurrencyTwo), userCurrencies.collect(toList()),
                         "Expected and actual Lists of UserCurrencyOne and UserCurrencyTwo are not equal.");
-        assertSelectCount(4);
+        assertSelectCount(1);
     }
-
 
     @Test
     public void findAllByUserId_notExists() throws Exception {
-        Stream<UserCurrency> userCurrencies = userCurrencyService.findAllByUserId(Long.MAX_VALUE);
+        Stream<UserCurrency> userCurrencies = userCurrencyService.findByUserId(new Long(Integer.MAX_VALUE));
         assertEquals(0, userCurrencies.count());
         assertSelectCount(1);
     }
@@ -123,8 +122,8 @@ class UserCurrencyServiceTest {
         Currency currencyForCreation = new Currency("ZZZ", 5556L);
         currencyService.create(currencyForCreation);
         UserCurrency userCurrencyForCreation = new UserCurrency();
-        userCurrencyForCreation.setUser(localUserOne);
-        userCurrencyForCreation.setCurrency(currencyForCreation);
+        userCurrencyForCreation.setUserId(localUserOne.getId());
+        userCurrencyForCreation.setCurrencyId(currencyForCreation.getId());
         userCurrencyForCreation.setValue(666.6f);
 
         UserCurrency actualUserCurrency = userCurrencyService.create(userCurrencyForCreation);
@@ -132,68 +131,68 @@ class UserCurrencyServiceTest {
                 () -> assertNotNull(actualUserCurrency, "Result of create() operation is empty."),
                 () -> assertEquals(userCurrencyForCreation, actualUserCurrency,
                         "Expected UserCurrency and created one are not equal."),
-                () -> assertEquals(currencyForCreation, userCurrencyForCreation.getCurrency(),
+                () -> assertEquals(currencyForCreation, currencyService.findOne(userCurrencyForCreation.getCurrencyId()).get(),
                         "Expected Currency and created one are not equal."),
-                () -> assertEquals(localUserOne, userCurrencyForCreation.getUser(),
+                () -> assertEquals(localUserOne, userService.findOne(userCurrencyForCreation.getUserId()).get(),
                         "Expected User and user from create() result are not equal.")
         );
 
-        assertSelectCount(2);
+        assertSelectCount(4);
         assertInsertCount(2);
     }
 
     @Test
     public void createUserCurrency_ifExists() throws Exception {
         UserCurrency userCurrencyForCreation = new UserCurrency();
-        userCurrencyForCreation.setUser(localUserCurrencyOne.getUser());
+        userCurrencyForCreation.setUserId(localUserCurrencyOne.getUserId());
         userCurrencyForCreation.setValue(localUserCurrencyOne.getValue());
-        userCurrencyForCreation.setCurrency(localUserCurrencyOne.getCurrency());
+        userCurrencyForCreation.setCurrencyId(localUserCurrencyOne.getCurrencyId());
 
         Throwable localException = Assertions.expectThrows(IllegalArgumentException.class,
                 () -> userCurrencyService.create(userCurrencyForCreation));
-        assertEquals(String.format("Object already exists with user_name=%s, currency_name=$s",
-                localUserCurrencyOne.getUser().getLogin(), localUserCurrencyOne.getCurrency().getName()),
+        assertEquals(String.format("Object already exists with userId=%s, currencyId=%s",
+                localUserCurrencyOne.getUserId(), localUserCurrencyOne.getCurrencyId()),
                 localException.getMessage());
 
         assertInsertCount(0);
-        assertSelectCount(3);
+        assertSelectCount(1);
     }
-
 
     @Test
     public void updateUserCurrencyWithCurrency_ifExistsNotSame() throws Exception {
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         Currency currencyForUpdate = new Currency("ABC", 6565L);
         currencyService.create(currencyForUpdate);
-        localUserCurrencyTwo.setCurrency(currencyForUpdate);
-        UserCurrency userCurrencyActual = userCurrencyService.updateCurrency(localUserCurrencyTwo.getId(), currencyForUpdate);
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        localUserCurrencyTwo.setCurrencyId(currencyForUpdate.getId());
+        UserCurrency userCurrencyActual =
+                userCurrencyService.updateCurrencyId(localUserCurrencyTwo.getId(), currencyForUpdate.getId());
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         assertAll(
                 () -> assertNotNull(userCurrencyActual, "Result of update() byCurrency method is empty."),
                 () -> assertEquals(localUserCurrencyTwo, userCurrencyActual,
                         "Expected UserCurrency and updated one are not equal."),
-                () -> assertEquals(localUserOne, userCurrencyActual.getUser(),
+                () -> assertEquals(localUserOne, userService.findOne(userCurrencyActual.getUserId()).get(),
                         "Expected User and User from update result are not equal."),
-                () -> assertEquals(currencyForUpdate, userCurrencyActual.getCurrency(),
+                () -> assertEquals(currencyForUpdate, currencyService.findOne(userCurrencyActual.getCurrencyId()).get(),
                         "Expected Currency and Currency from update result are not equal."),
                 () -> assertEquals(userCurrencyCountBefore, userCurrencyCountAfter,
                         "Expected UserCurrencyCount and count after update one are not equal.")
         );
 
-        assertSelectCount(10);
+        assertSelectCount(6);
         assertInsertCount(1);
         assertUpdateCount(1);
     }
 
     @Test
     public void updateUserCurrencyWithCurrency_ifExistsSame() throws Exception {
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         Currency currencyForUpdate = localCurrencyTwo;
-        localUserCurrencyTwo.setCurrency(currencyForUpdate);
+        localUserCurrencyTwo.setCurrencyId(currencyForUpdate.getId());
         Throwable localException = Assertions.expectThrows(IllegalArgumentException.class,
-                () -> userCurrencyService.updateCurrency(localUserCurrencyTwo.getId(), currencyForUpdate));
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+                () -> userCurrencyService.updateCurrencyId(localUserCurrencyTwo.getId(), currencyForUpdate.getId()));
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         assertAll(
                 () -> assertEquals("Exact same object already exists. Nothing to update.", localException.getMessage(),
@@ -202,17 +201,17 @@ class UserCurrencyServiceTest {
                         "Expected UserCurrencyCount and count after update one are not equal.")
         );
 
-        assertSelectCount(9);
+        assertSelectCount(3);
         assertInsertCount(0);
         assertUpdateCount(0);
     }
 
     @Test
     public void updateUserCurrencyWithCurrency_notExists() throws Exception {
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         Throwable localException = Assertions.expectThrows(NullPointerException.class,
-                () -> userCurrencyService.updateCurrency(Long.MAX_VALUE, localCurrencyTwo));
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+                () -> userCurrencyService.updateCurrencyId(Long.MAX_VALUE, localCurrencyTwo.getId()));
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         assertAll(
                 () -> assertEquals(userCurrencyCountBefore, userCurrencyCountAfter,
@@ -221,39 +220,39 @@ class UserCurrencyServiceTest {
                         "Expected throw message and really thrown one are not equal.")
         );
 
-        assertSelectCount(9);
+        assertSelectCount(3);
         assertInsertCount(0);
         assertUpdateCount(0);
     }
 
     @Test
     public void updateUserCurrencyWithValue_ifExistsNotSame() throws Exception {
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         localUserCurrencyTwo.setValue(localUserCurrencyTwo.getValue() * 1.16f);
         UserCurrency userCurrencyActual = userCurrencyService.updateValue(localUserCurrencyTwo);
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         assertAll(
                 () -> assertNotNull(userCurrencyActual, "Result of update() by Value method is empty."),
                 () -> assertEquals(localUserCurrencyTwo, userCurrencyActual,
                         "Expected UserCurrency and updated one are not equal."),
-                () -> assertEquals(localUserOne, userCurrencyActual.getUser(),
+                () -> assertEquals(localUserOne, userService.findOne(userCurrencyActual.getUserId()).get(),
                         "Expected User and User from update result are not equal."),
                 () -> assertEquals(userCurrencyCountBefore, userCurrencyCountAfter,
                         "Expected UserCurrencyCount and count after update one are not equal.")
         );
-        assertSelectCount(9);
+        assertSelectCount(4);
         assertInsertCount(0);
         assertUpdateCount(1);
     }
 
     @Test
     public void updateUserCurrencyWithValue_ifExistsSame() throws Exception {
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         localUserCurrencyTwo.setValue(localUserCurrencyTwo.getValue());
         Throwable localException = Assertions.expectThrows(IllegalArgumentException.class,
                 () -> userCurrencyService.updateValue(localUserCurrencyTwo));
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         assertAll(
                 () -> assertEquals("Exact same object already exists. Nothing to update.", localException.getMessage(),
@@ -262,17 +261,17 @@ class UserCurrencyServiceTest {
                         "Expected UserCurrencyCount and count after update one are not equal.")
         );
 
-        assertSelectCount(9);
+        assertSelectCount(3);
         assertInsertCount(0);
         assertUpdateCount(0);
     }
 
     @Test
     public void updateUserCurrencyWithValue_notExists() throws Exception {
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         Throwable localException = Assertions.expectThrows(NullPointerException.class,
-                () -> userCurrencyService.updateCurrency(Long.MAX_VALUE, localCurrencyTwo));
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+                () -> userCurrencyService.updateCurrencyId(Long.MAX_VALUE, localCurrencyTwo.getId()));
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         assertAll(
                 () -> assertEquals(userCurrencyCountBefore, userCurrencyCountAfter,
@@ -281,18 +280,17 @@ class UserCurrencyServiceTest {
                         "Expected throw message and really thrown one are not equal.")
         );
 
-        assertSelectCount(9);
+        assertSelectCount(3);
         assertInsertCount(0);
         assertUpdateCount(0);
     }
 
-
     @Test
     public void deleteUserCurrency_ifExists() throws Exception {
         Long localId = localUserCurrencyTwo.getId();
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         userCurrencyService.delete(localId);
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         Optional<UserCurrency> deletedUserCurrency = userCurrencyService.findOne(localId);
         assertFalse(deletedUserCurrency.isPresent(), "Deleted object exists after deletion method.");
@@ -314,20 +312,20 @@ class UserCurrencyServiceTest {
         assertEquals(userCurrencyCountBefore - 1, userCurrencyCountAfter,
                 "Before and After UserCurrency counts are not equal after UserCurrency deletion method.");
         assertDeleteCount(1);
-        assertSelectCount(11);
+        assertSelectCount(6);
     }
 
     @Test
     public void deleteUserCurrency_notExists() throws Exception {
-        long userCurrencyCountBefore = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountBefore = userCurrencyService.findByUserId(localUserOne.getId()).count();
         Throwable localException = Assertions.expectThrows(NullPointerException.class,
                 () -> userCurrencyService.delete(Long.MAX_VALUE));
         assertEquals("UserCurrency doesn't exist with id: " + Long.MAX_VALUE, localException.getMessage());
-        long userCurrencyCountAfter = userCurrencyService.findAllByUserId(localUserOne.getId()).count();
+        long userCurrencyCountAfter = userCurrencyService.findByUserId(localUserOne.getId()).count();
 
         assertEquals(userCurrencyCountBefore, userCurrencyCountAfter,
                 "Before and After UserCurrency counts are not equal after UserCurrency deletion method.");
-        assertSelectCount(9);
+        assertSelectCount(3);
         assertDeleteCount(0);
     }
 }
