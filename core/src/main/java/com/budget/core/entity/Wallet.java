@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
+@EqualsAndHashCode
 @Getter @Setter @NoArgsConstructor @RequiredArgsConstructor
 public class Wallet {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,11 +15,5 @@ public class Wallet {
     @NonNull
     private Boolean enable = true;
     @NonNull
-    @ManyToOne
-    @JoinColumn(name="USER_ID")
-    private User user;
-    @NonNull
-    @ManyToOne
-    @JoinColumn(name="CURRENCY_ID")
-    private Currency currency;
+    private Long userCurrencyId;
 }

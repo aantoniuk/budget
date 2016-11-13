@@ -1,24 +1,14 @@
 package com.budget.core.dao;
 
 import com.budget.core.entity.Wallet;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface WalletDao extends Repository<Wallet, Long> {
+public interface WalletDao extends JpaRepository<Wallet, Long> {
 
-    Stream<Wallet> findByNameAndUserIdAndCurrencyId(String name, Long userId, Long currencyId);
+    Stream<Wallet> findByNameAndUserCurrencyId(String name, Long userCurrencyId);
 
-    // Stream<Wallet> findByNameAndUserId(String name, Long userId);
+//    Stream<Wallet> findByUserId(Long userId);
 
-    //Stream<Wallet> findByNameAndUserCurrencyId(String name, Long userCurrencyId);
-
-    Wallet save(Wallet wallet);
-
-    Stream<Wallet> findAll();
-
-    void delete(Long id);
-
-    Optional<Wallet> findOne(Long id);
 }
