@@ -147,6 +147,7 @@ class CurrencyServiceTest {
     @Test
     public void update_notExists() throws Exception {
         Currency localCurrency = new Currency("ZZZ", 10657L);
+        localCurrency.setId(Long.MAX_VALUE);
         Throwable localException = Assertions.expectThrows(NullPointerException.class,
                 () -> currencyService.update(localCurrency));
         assertEquals("Object doesn't exist", localException.getMessage());

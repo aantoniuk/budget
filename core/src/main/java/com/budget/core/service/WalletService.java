@@ -69,37 +69,4 @@ public class WalletService extends AbstractService<Wallet> {
         updatableWallet.setName(walletName);
         return walletDao.save(updatableWallet);
     }
-
-//    public Stream<Wallet> findByUserId(Long userId) {
-//        return walletDao.findByUserId(userId);
-//    }
-
-//
-//    public Optional<Wallet> findOne(long id) {
-//        return walletDao.findOne(id);
-//    }
-//
-
-//
-//    public Stream<Wallet> findAll() {
-//        return walletDao.findAll();
-//    }
-//
-//
-//    public Wallet update(Wallet wallet) {
-//        if(findByNameAndUserIdAndCurrencyId(wallet.getName(), wallet.getUser().getId(), wallet.getCurrency().getId())
-//                .findAny().isPresent()) {
-//            throw new IllegalArgumentException("Exactly same Object Wallet already exists.");
-//        } else if (!findOne(wallet.getId()).isPresent()) {
-//            throw new ObjectNotFoundException("Object Wallet not found.");
-//        }
-//        return walletDao.save(wallet);
-//    }
-//
-//    public void delete(Wallet wallet) {
-//        if(!findOne(wallet.getId()).isPresent()) {
-//            throw new NullPointerException("Object doesn't exist");
-//        }
-//        walletDao.delete(wallet.getId());
-//    }
 }

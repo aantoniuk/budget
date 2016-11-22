@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//@RestController
+import static java.lang.System.out;
+
+@RestController
 @RequestMapping("/currencies")
 public class CurrencyController {
 
@@ -24,7 +28,7 @@ public class CurrencyController {
         this.currencyService = currencyService;
     }
 
-    /*@RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Currency> create(@RequestBody Currency currency) throws ObjectAlreadyExists {
         Optional<Currency> localCurrency = currencyService.findByName(currency.getName());
         if (localCurrency.isPresent()) {
@@ -32,7 +36,7 @@ public class CurrencyController {
         }
         Currency categoryForResponse = currencyService.save(currency);
         return new ResponseEntity<>(currency, HttpStatus.CREATED);
-    }*/
+    }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     public ResponseEntity<Currency> update(@PathVariable("id") Long id, @RequestBody Currency currency) throws ObjectNotFoundException {
@@ -58,7 +62,7 @@ public class CurrencyController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public ResponseEntity<Currency> getOne(@PathVariable("id") long id) throws ObjectNotFoundException {
+    public ResponseEntity<Currency> getOne(@PathVariable("id") Long id) throws ObjectNotFoundException {
         Optional<Currency> localCurrency = currencyService.findOne(id);
         if(!localCurrency.isPresent()) {
             throw new ObjectNotFoundException("REST Controller: Object Currency with id " + id +" has not been found for GETTING.");
@@ -66,12 +70,12 @@ public class CurrencyController {
         return new ResponseEntity<>(localCurrency.get(), HttpStatus.OK);
     }
 
-    /*@RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Currency>> getAll() throws ObjectNotFoundException {
-        Stream<Currency> currencyList = currencyService.findAll();
-        if (!currencyList.findFirst().isPresent()) {
+        Optional<List<Currency>> optionalCurrencyList = Optional.ofNullable(currencyService.findAll().collect(Collectors.toList()));
+        if (optionalCurrencyList.get().size() == 0) {
             throw new ObjectNotFoundException("REST Controller: All Currency Objects have not been found.");
         }
-        return new ResponseEntity<>(currencyList, HttpStatus.OK);
-    }*/
+        return new ResponseEntity<>(optionalCurrencyList.get(), HttpStatus.OK);
+    }
 }

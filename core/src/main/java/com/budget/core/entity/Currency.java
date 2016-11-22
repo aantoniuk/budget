@@ -12,7 +12,7 @@ import javax.persistence.Id;
 @Getter @Setter @NoArgsConstructor @RequiredArgsConstructor
 public class Currency {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NonNull
     private String name;
     @NonNull
