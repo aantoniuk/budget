@@ -1,11 +1,9 @@
 package com.budget.core.rest;
 
 import com.budget.core.entity.Category;
-import com.budget.core.service.CategoryService;
+import com.budget.core.service.CategoryServiceImpl;
 import com.google.gson.Gson;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,7 +25,7 @@ public class CategoryControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private CategoryService serviceMock;
+    private CategoryServiceImpl serviceMock;
 
     private final static Long CATEGORY_ID_LONG = 17L;
 

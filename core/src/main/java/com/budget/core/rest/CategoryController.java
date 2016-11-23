@@ -2,7 +2,7 @@ package com.budget.core.rest;
 
 import com.budget.core.entity.Category;
 import com.budget.core.exception.ObjectNotFoundException;
-import com.budget.core.service.CategoryService;
+import com.budget.core.service.CategoryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +14,10 @@ import java.util.Optional;
 @RequestMapping("/categories")
 public class CategoryController {
 
-    private final CategoryService categoryService;
+    private final CategoryServiceImpl categoryService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService) {
+    public CategoryController(CategoryServiceImpl categoryService) {
         this.categoryService = categoryService;
     }
 

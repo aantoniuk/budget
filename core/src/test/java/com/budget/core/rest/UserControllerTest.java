@@ -1,7 +1,7 @@
 package com.budget.core.rest;
 
 import com.budget.core.entity.User;
-import com.budget.core.service.UserService;
+import com.budget.core.service.UserServiceImpl;
 import com.google.gson.Gson;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -18,8 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -32,7 +30,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserService serviceMock;
+    private UserServiceImpl serviceMock;
 
     private final static long USER_ID_LONG = 946L;
     private final static String USER_LOGIN = "Master";

@@ -40,15 +40,15 @@ public class UserServiceTest {
     private static final String PASSWORD = "password";
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
     @Autowired
-    private CategoryService categoryService;
+    private CategoryServiceImpl categoryService;
     @Autowired
-    private UserCategoryService userCategoryService;
+    private UserCategoryServiceImpl userCategoryService;
     @Autowired
     private CurrencyService currencyService;
     @Autowired
-    private UserCurrencyService userCurrencyService;
+    private UserCurrencyServiceImplImpl userCurrencyServiceImpl;
 
     private User user;
 
@@ -164,7 +164,7 @@ public class UserServiceTest {
                 () -> assertEquals(newUser.getId(), userSubCategories.get(0).getUserId())
         );
 
-        List<UserCurrency> userCurrencies = userCurrencyService.findByUserId(newUser.getId()).collect(Collectors.toList());
+        List<UserCurrency> userCurrencies = userCurrencyServiceImpl.findByUserId(newUser.getId()).collect(Collectors.toList());
         // check currency
         assertAll(
                 () -> assertNotNull(userCurrencies),
@@ -226,7 +226,7 @@ public class UserServiceTest {
 
         Optional<User> userOpt = userService.findOne(newUser.getId());
         Stream<UserCategory> categoryStream = userCategoryService.findByParentId(newUser.getId(), null);
-        Stream<UserCurrency> currencyStream = userCurrencyService.findByUserId(newUser.getId());
+        Stream<UserCurrency> currencyStream = userCurrencyServiceImpl.findByUserId(newUser.getId());
 
         assertAll(
                 () -> assertFalse(userOpt.isPresent()),

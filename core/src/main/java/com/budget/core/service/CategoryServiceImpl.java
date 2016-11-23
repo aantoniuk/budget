@@ -12,12 +12,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class CategoryService extends BaseCategoryService<Category> {
+public class CategoryServiceImpl extends BaseCategoryServiceImpl<Category> {
 
     private final CategoryDao categoryDao;
 
     @Autowired
-    public CategoryService(CategoryDao categoryDao) {
+    public CategoryServiceImpl(CategoryDao categoryDao) {
         this.categoryDao = categoryDao;
     }
 

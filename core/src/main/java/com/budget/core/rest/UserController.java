@@ -1,25 +1,23 @@
 package com.budget.core.rest;
 
 import com.budget.core.entity.User;
-import com.budget.core.exception.ObjectAlreadyExists;
 import com.budget.core.exception.ObjectNotFoundException;
-import com.budget.core.service.UserService;
+import com.budget.core.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 //@RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 

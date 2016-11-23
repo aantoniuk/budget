@@ -14,22 +14,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-public class UserService extends AbstractService<User> {
+public class UserServiceImpl extends AbstractServiceImpl<User> {
 
     private final UserDao userDao;
-    private final CategoryService categoryService;
-    private final UserCategoryService userCategoryService;
+    private final CategoryServiceImpl categoryService;
+    private final UserCategoryServiceImpl userCategoryService;
     private final CurrencyService currencyService;
-    private final UserCurrencyService userCurrencyService;
+    private final UserCurrencyServiceImplImpl userCurrencyServiceImpl;
 
     @Autowired
-    public UserService(UserDao userDao, CategoryService categoryService, UserCategoryService userCategoryService,
-                       CurrencyService currencyService, UserCurrencyService userCurrencyService) {
+    public UserServiceImpl(UserDao userDao, CategoryServiceImpl categoryService, UserCategoryServiceImpl userCategoryService,
+                           CurrencyService currencyService, UserCurrencyServiceImplImpl userCurrencyServiceImpl) {
         this.userDao = userDao;
         this.categoryService = categoryService;
         this.userCategoryService = userCategoryService;
         this.currencyService = currencyService;
-        this.userCurrencyService = userCurrencyService;
+        this.userCurrencyServiceImpl = userCurrencyServiceImpl;
     }
 
     public Optional<User> findByLogin(String login) {
@@ -97,7 +97,7 @@ public class UserService extends AbstractService<User> {
     }
 
     private void deleteUserCurrencies(Long userId) {
-        userCurrencyService.findByUserId(userId).forEach(item -> userCurrencyService.delete(item.getId()));
+        userCurrencyServiceImpl.findByUserId(userId).forEach(item -> userCurrencyServiceImpl.delete(item.getId()));
     }
 
     private void createUserCurrencies(User user) {
@@ -108,7 +108,7 @@ public class UserService extends AbstractService<User> {
             userCurrency.setValue(Float.MAX_VALUE);
             userCurrency.setCurrencyId(item.getId());
 
-            userCurrencyService.save(userCurrency);
+            userCurrencyServiceImpl.save(userCurrency);
         });
     }
 

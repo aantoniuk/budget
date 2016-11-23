@@ -1,7 +1,6 @@
 package com.budget.core.service;
 
 import com.budget.core.Utils.OperationType;
-import com.budget.core.entity.Category;
 import com.budget.core.entity.User;
 import com.budget.core.entity.UserCategory;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
@@ -37,9 +35,9 @@ import static org.junit.jupiter.api.Assertions.*;
 })
 public class UserCategoryServiceTest {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
     @Autowired
-    private UserCategoryService userCategoryService;
+    private UserCategoryServiceImpl userCategoryService;
 
     private User user;
     private UserCategory userCategory;

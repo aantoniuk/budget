@@ -14,12 +14,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class UserCategoryService extends BaseCategoryService<UserCategory> {
+public class UserCategoryServiceImpl extends BaseCategoryServiceImpl<UserCategory> {
 
     private final UserCategoryDao userCategoryDao;
 
     @Autowired
-    public UserCategoryService(UserCategoryDao userCategoryDao) {
+    public UserCategoryServiceImpl(UserCategoryDao userCategoryDao) {
         this.userCategoryDao = userCategoryDao;
     }
 

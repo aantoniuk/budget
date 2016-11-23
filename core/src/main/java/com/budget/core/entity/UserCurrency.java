@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter @Setter
 public class UserCurrency {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private Float value;
     private Boolean enable = true;
     private Long userId;
