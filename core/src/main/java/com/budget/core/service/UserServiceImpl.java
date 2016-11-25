@@ -20,11 +20,11 @@ public class UserServiceImpl extends AbstractServiceImpl<User> {
     private final CategoryServiceImpl categoryService;
     private final UserCategoryServiceImpl userCategoryService;
     private final CurrencyService currencyService;
-    private final UserCurrencyServiceImplImpl userCurrencyServiceImpl;
+    private final UserCurrencyServiceImpl userCurrencyServiceImpl;
 
     @Autowired
     public UserServiceImpl(UserDao userDao, CategoryServiceImpl categoryService, UserCategoryServiceImpl userCategoryService,
-                           CurrencyService currencyService, UserCurrencyServiceImplImpl userCurrencyServiceImpl) {
+                           CurrencyService currencyService, UserCurrencyServiceImpl userCurrencyServiceImpl) {
         this.userDao = userDao;
         this.categoryService = categoryService;
         this.userCategoryService = userCategoryService;

@@ -9,11 +9,13 @@ import javax.persistence.*;
 @Getter @Setter @NoArgsConstructor @RequiredArgsConstructor
 public class Wallet {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NonNull
     private String name;
     @NonNull
     private Boolean enable = true;
     @NonNull
     private Long userCurrencyId;
+    // TODO
+    // private Float amount;
 }

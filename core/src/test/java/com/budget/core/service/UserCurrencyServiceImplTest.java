@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("h2")
 class UserCurrencyServiceImplTest {
     @Autowired
-    private UserCurrencyServiceImplImpl userCurrencyServiceImpl;
+    private UserCurrencyServiceImpl userCurrencyServiceImpl;
     @Autowired
     private CurrencyService currencyService;
     @Autowired

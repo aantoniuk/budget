@@ -13,12 +13,12 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class UserCurrencyServiceImplImpl extends AbstractServiceImpl<UserCurrency> implements UserCurrencyService {
+public class UserCurrencyServiceImpl extends AbstractServiceImpl<UserCurrency> implements UserCurrencyService {
 
     private final UserCurrencyDao userCurrencyDao;
 
     @Autowired
-    public UserCurrencyServiceImplImpl(UserCurrencyDao userCurrencyDao) {
+    public UserCurrencyServiceImpl(UserCurrencyDao userCurrencyDao) {
         this.userCurrencyDao = userCurrencyDao;
     }
 

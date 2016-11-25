@@ -19,7 +19,7 @@ public class ExceptionHandlingController {
     @ExceptionHandler(ObjectNotFoundException.class)
     public void objectNotFound() {}
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "HandlerController: NPE: Object has not been found.")
     @ExceptionHandler(NullPointerException.class)
     public void nullPointerException() {}
 
@@ -27,7 +27,7 @@ public class ExceptionHandlingController {
     @ExceptionHandler(ObjectAlreadyExists.class)
     public void objectAlreadyExists() {}
 
-    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "HandlerController: Object is same and can't be updated.")
     @ExceptionHandler(IllegalArgumentException.class)
     public void illegalArgumentException() {}
 }

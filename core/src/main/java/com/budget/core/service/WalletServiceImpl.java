@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class WalletServiceImpl extends AbstractServiceImpl<Wallet> {
+public class WalletServiceImpl extends AbstractServiceImpl<Wallet> implements WalletService {
     private final WalletDao walletDao;
 
     @Autowired

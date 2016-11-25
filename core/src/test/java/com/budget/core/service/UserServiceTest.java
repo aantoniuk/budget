@@ -48,7 +48,7 @@ public class UserServiceTest {
     @Autowired
     private CurrencyService currencyService;
     @Autowired
-    private UserCurrencyServiceImplImpl userCurrencyServiceImpl;
+    private UserCurrencyServiceImpl userCurrencyServiceImpl;
 
     private User user;
 

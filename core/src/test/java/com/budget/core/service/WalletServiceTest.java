@@ -34,7 +34,7 @@ class WalletServiceTest {
     @Autowired
     private WalletServiceImpl walletService;
     @Autowired
-    private UserCurrencyServiceImplImpl userCurrencyServiceImpl;
+    private UserCurrencyServiceImpl userCurrencyServiceImpl;
     @Autowired
     private UserServiceImpl userService;
     @Autowired
