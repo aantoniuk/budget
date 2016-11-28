@@ -34,13 +34,14 @@ import static org.junit.jupiter.api.Assertions.*;
         DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class
 })
-public class UserServiceTest {
+public class UserServiceImplTest {
 
     private static final String LOGIN = "login";
     private static final String PASSWORD = "password";
 
     @Autowired
-    private UserServiceImpl userService;
+    // private UserServiceImpl userService;
+    private UserService userService;
     @Autowired
     private CategoryServiceImpl categoryService;
     @Autowired
@@ -48,7 +49,8 @@ public class UserServiceTest {
     @Autowired
     private CurrencyService currencyService;
     @Autowired
-    private UserCurrencyServiceImpl userCurrencyServiceImpl;
+    // private UserCurrencyServiceImpl userCurrencyService;
+    private UserCurrencyService userCurrencyService;
 
     private User user;
 
@@ -164,7 +166,7 @@ public class UserServiceTest {
                 () -> assertEquals(newUser.getId(), userSubCategories.get(0).getUserId())
         );
 
-        List<UserCurrency> userCurrencies = userCurrencyServiceImpl.findByUserId(newUser.getId()).collect(Collectors.toList());
+        List<UserCurrency> userCurrencies = userCurrencyService.findByUserId(newUser.getId()).collect(Collectors.toList());
         // check currency
         assertAll(
                 () -> assertNotNull(userCurrencies),
@@ -226,7 +228,7 @@ public class UserServiceTest {
 
         Optional<User> userOpt = userService.findOne(newUser.getId());
         Stream<UserCategory> categoryStream = userCategoryService.findByParentId(newUser.getId(), null);
-        Stream<UserCurrency> currencyStream = userCurrencyServiceImpl.findByUserId(newUser.getId());
+        Stream<UserCurrency> currencyStream = userCurrencyService.findByUserId(newUser.getId());
 
         assertAll(
                 () -> assertFalse(userOpt.isPresent()),

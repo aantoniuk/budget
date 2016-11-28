@@ -12,10 +12,10 @@ public abstract class AbstractServiceImpl<T> implements AbstractService<T> {
     }
 
     public void delete(Long id) {
-        if(id == null) {
+        if (id == null) {
             throw new NullPointerException("Id cannot be null");
         }
-        if(!findOne(id).isPresent()) {
+        if (!findOne(id).isPresent()) {
             throw new NullPointerException("Object doesn't exist");
         }
         getDao().delete(id);

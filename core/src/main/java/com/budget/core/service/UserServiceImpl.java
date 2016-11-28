@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl extends AbstractServiceImpl<User> {
+public class UserServiceImpl extends AbstractServiceImpl<User> implements UserService {
 
     private final UserDao userDao;
     private final CategoryServiceImpl categoryService;
@@ -55,12 +55,10 @@ public class UserServiceImpl extends AbstractServiceImpl<User> {
     public User updatePassword(@NonNull Long userId, @NonNull String password) {
         Optional<User> optionalUser = findOne(userId);
         if (!optionalUser.isPresent()) {
-            //throw new IllegalArgumentException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
             throw new NullPointerException("User doesn't exist with id:" + userId);
         }
         User updatableUser = optionalUser.get();
         updatableUser.setPassword(password);
-
         return userDao.save(updatableUser);
     }
 
@@ -68,7 +66,6 @@ public class UserServiceImpl extends AbstractServiceImpl<User> {
     public User updateEnable(@NonNull Long userId, @NonNull Boolean enable) {
         Optional<User> optionalUser = findOne(userId);
         if (!optionalUser.isPresent()) {
-            //throw new IllegalArgumentException("User doesn't exist with id:" + user.getId() + " and login: " + user.getLogin());
             throw new NullPointerException("User doesn't exist with id:" + userId);
         }
         User updatableUser = optionalUser.get();
@@ -79,10 +76,9 @@ public class UserServiceImpl extends AbstractServiceImpl<User> {
 
     @Transactional
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws NullPointerException {
         Optional<User> userOptional = findOne(id);
         if (!userOptional.isPresent()) {
-            // throw new IllegalArgumentException("User doesn't exist with id:" + id);
             throw new NullPointerException("User doesn't exist with id:" + id);
         }
         deleteUserCategories(id);

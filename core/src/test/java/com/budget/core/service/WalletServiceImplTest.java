@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("h2")
-class WalletServiceTest {
+class WalletServiceImplTest {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
@@ -40,7 +40,7 @@ class WalletServiceTest {
     @Autowired
     private CurrencyService currencyService;
 
-    private static final Logger logger = Logger.getLogger(WalletServiceTest.class);
+    private static final Logger logger = Logger.getLogger(WalletServiceImplTest.class);
 
     private Wallet localWalletOne, localWalletTwo, localWalletThree;
     private UserCurrency localUserCurrencyOne, localUserCurrencyTwo;
