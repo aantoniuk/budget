@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 })
 public class UserCategoryServiceTest {
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
     @Autowired
     private UserCategoryServiceImpl userCategoryService;
 

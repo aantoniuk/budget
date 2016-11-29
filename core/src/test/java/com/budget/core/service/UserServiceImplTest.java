@@ -40,7 +40,6 @@ public class UserServiceImplTest {
     private static final String PASSWORD = "password";
 
     @Autowired
-    // private UserServiceImpl userService;
     private UserService userService;
     @Autowired
     private CategoryServiceImpl categoryService;
@@ -49,7 +48,6 @@ public class UserServiceImplTest {
     @Autowired
     private CurrencyService currencyService;
     @Autowired
-    // private UserCurrencyServiceImpl userCurrencyService;
     private UserCurrencyService userCurrencyService;
 
     private User user;

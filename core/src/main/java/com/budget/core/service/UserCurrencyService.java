@@ -12,4 +12,5 @@ public interface UserCurrencyService extends AbstractService<UserCurrency> {
     UserCurrency updateCurrencyId(Long userCurrencyId, Long currencyId);
     UserCurrency updateValue(UserCurrency userCurrency) throws IllegalArgumentException, NullPointerException;
     UserCurrency save(UserCurrency userCurrency);
+    UserCurrency create(UserCurrency userCurrency);
 }

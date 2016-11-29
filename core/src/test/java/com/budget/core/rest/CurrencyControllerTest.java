@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 public class CurrencyControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private CurrencyService serviceMock;
 
@@ -114,7 +113,7 @@ public class CurrencyControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(currencyOptionalNotNullOne.get().getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.value", Matchers.hasToString(currencyOptionalNotNullOne.get().getValue().toString())));
         Mockito.verify(serviceMock, Mockito.times(1)).findOne(CURRENCY_ID_LONG);
-        Mockito.verify(serviceMock, Mockito.times(1)).save(org.mockito.Matchers.refEq(currencyOptionalNotNullOne.get()));
+        Mockito.verify(serviceMock, Mockito.times(1)).update(org.mockito.Matchers.refEq(currencyOptionalNotNullOne.get()));
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
@@ -142,7 +141,7 @@ public class CurrencyControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(currencyOptionalNotNullOne.get().getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.value", Matchers.hasToString(currencyOptionalNotNullOne.get().getValue().toString())));
         Mockito.verify(serviceMock, Mockito.times(1)).findByName(currencyOptionalNotNullOne.get().getName());
-        Mockito.verify(serviceMock, Mockito.times(1)).save(org.mockito.Matchers.refEq(currencyOptionalNotNullOne.get()));
+        Mockito.verify(serviceMock, Mockito.times(1)).update(org.mockito.Matchers.refEq(currencyOptionalNotNullOne.get()));
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 

@@ -12,4 +12,5 @@ public interface WalletService extends AbstractService<Wallet> {
     Wallet updateUserCurrencyId(Long walletId, Long userCurrencyId);
     Wallet updateName(Long walletId, String walletName);
     Wallet create(Wallet wallet);
+    Stream<Wallet> findAll();
 }

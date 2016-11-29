@@ -19,12 +19,14 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     private final UserDao userDao;
     private final CategoryServiceImpl categoryService;
     private final UserCategoryServiceImpl userCategoryService;
+    //private final CurrencyServiceImp currencyService;
     private final CurrencyService currencyService;
-    private final UserCurrencyServiceImpl userCurrencyServiceImpl;
+    //private final UserCurrencyServiceImpl userCurrencyServiceImpl;
+    private final UserCurrencyService userCurrencyServiceImpl;
 
     @Autowired
     public UserServiceImpl(UserDao userDao, CategoryServiceImpl categoryService, UserCategoryServiceImpl userCategoryService,
-                           CurrencyService currencyService, UserCurrencyServiceImpl userCurrencyServiceImpl) {
+                           CurrencyServiceImp currencyService, UserCurrencyServiceImpl userCurrencyServiceImpl) {
         this.userDao = userDao;
         this.categoryService = categoryService;
         this.userCategoryService = userCategoryService;

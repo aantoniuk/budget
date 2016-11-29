@@ -4,6 +4,7 @@ import com.budget.core.entity.Currency;
 import com.budget.core.exception.ObjectAlreadyExists;
 import com.budget.core.exception.ObjectNotFoundException;
 import com.budget.core.service.CurrencyService;
+import com.budget.core.service.CurrencyServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class CurrencyController {
         if (localCurrency.isPresent()) {
             throw new ObjectAlreadyExists("REST Controller: Object Currency with id " + localCurrency.get().getId() +" is already exist.");
         }
-        Currency categoryForResponse = currencyService.save(currency);
+        Currency categoryForResponse = currencyService.update(currency);
         return new ResponseEntity<>(currency, HttpStatus.CREATED);
     }
 
@@ -43,7 +44,7 @@ public class CurrencyController {
         if (currency.getName() != null) {
             localCurrency.get().setName(currency.getName());
         }
-        currencyService.save(currency);
+        currencyService.update(currency);
         return new ResponseEntity<>(localCurrency.get(), HttpStatus.OK);
     }
 

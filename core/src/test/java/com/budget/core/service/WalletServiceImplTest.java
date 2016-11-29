@@ -32,11 +32,11 @@ class WalletServiceImplTest {
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
-    private WalletServiceImpl walletService;
+    private WalletService walletService;
     @Autowired
-    private UserCurrencyServiceImpl userCurrencyServiceImpl;
+    private UserCurrencyService userCurrencyService;
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
     @Autowired
     private CurrencyService currencyService;
 
@@ -68,12 +68,12 @@ class WalletServiceImplTest {
             localUserCurrencyOne.setValue(494.4f);
             localUserCurrencyOne.setEnable(true);
             // FIXME do we need to automate UserCurrency creation via Hibernate or Service layer?
-            userCurrencyServiceImpl.create(localUserCurrencyOne);
+            userCurrencyService.create(localUserCurrencyOne);
             localUserCurrencyTwo = new UserCurrency();
             localUserCurrencyTwo.setCurrencyId(localCurrencyTwo.getId());
             localUserCurrencyTwo.setUserId(localUserOne.getId());
             localUserCurrencyTwo.setValue(9999.9f);
-            userCurrencyServiceImpl.create(localUserCurrencyTwo);
+            userCurrencyService.create(localUserCurrencyTwo);
 
             localWalletOne = new Wallet("serhii's", localUserCurrencyOne.getId());
             localWalletTwo = new Wallet("tolik's",  localUserCurrencyOne.getId());
@@ -96,8 +96,8 @@ class WalletServiceImplTest {
             Stream<Wallet> walletForDeletion = walletService.findAll();
             walletForDeletion.map(Wallet::getId).forEach(walletService::delete);
 
-            Stream<UserCurrency> userCurrencyForDeletion = userCurrencyServiceImpl.findByUserId(localUserOne.getId());
-            userCurrencyForDeletion.map(UserCurrency::getId).forEach(userCurrencyServiceImpl::delete);
+            Stream<UserCurrency> userCurrencyForDeletion = userCurrencyService.findByUserId(localUserOne.getId());
+            userCurrencyForDeletion.map(UserCurrency::getId).forEach(userCurrencyService::delete);
 
             Stream<Currency> currencyForDeletion = currencyService.findAll();
             currencyForDeletion.map(Currency::getId).forEach(currencyService::delete);
@@ -113,13 +113,13 @@ class WalletServiceImplTest {
         assertTrue(actualWallet.isPresent(), "Actual WalletOne must exists, but it's not that");
         Long localUserCurrencyId = actualWallet.get().getUserCurrencyId();
         assertAll(
-                () -> assertEquals(localUserCurrencyOne, userCurrencyServiceImpl.findOne(localUserCurrencyId).get(),
+                () -> assertEquals(localUserCurrencyOne, userCurrencyService.findOne(localUserCurrencyId).get(),
                         "Expected UserCurrencyOne from init() and actual from test are not equal"),
                 () -> assertEquals(localUserOne,
-                        userService.findOne(userCurrencyServiceImpl.findOne(localUserCurrencyId).get().getUserId()).get(),
+                        userService.findOne(userCurrencyService.findOne(localUserCurrencyId).get().getUserId()).get(),
                         "Expected UserOne from init() and actual from test are not equal"),
                 () -> assertEquals(localCurrencyOne,
-                        currencyService.findOne(userCurrencyServiceImpl.findOne(localUserCurrencyId).get().getCurrencyId()).get(),
+                        currencyService.findOne(userCurrencyService.findOne(localUserCurrencyId).get().getCurrencyId()).get(),
                         "Expected CurrencyOne from init() and actual from test are not equal")
         );
         assertSelectCount(6);
@@ -150,10 +150,10 @@ class WalletServiceImplTest {
                 () -> assertEquals(localWalletOne, actualWalletSupplier.get().findAny().get(),
                         "Expected WalletOne from init() and actual from test are not equal"),
                 () -> assertEquals(localUserOne,
-                        userService.findOne(userCurrencyServiceImpl.findOne(localUserCurrencyId).get().getUserId()).get(),
+                        userService.findOne(userCurrencyService.findOne(localUserCurrencyId).get().getUserId()).get(),
                         "Expected UserOne from init() and actual from test are not equal"),
                 () -> assertEquals(localCurrencyOne,
-                        currencyService.findOne(userCurrencyServiceImpl.findOne(localUserCurrencyId).get().getCurrencyId()).get(),
+                        currencyService.findOne(userCurrencyService.findOne(localUserCurrencyId).get().getCurrencyId()).get(),
                         "Expected CurrencyOne from init() and actual from test are not equal")
         );
         assertSelectCount(8);
@@ -177,10 +177,10 @@ class WalletServiceImplTest {
                 () -> assertNotNull(actualWallet, "Wallet is Null after creation, but must no be Null."),
                 () -> assertEquals(walletForCreation, actualWallet, "Wallet before creation and really created Wallet are not equal."),
                 () -> assertEquals(localUserOne,
-                        userService.findOne(userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get().getUserId()).get(),
+                        userService.findOne(userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get().getUserId()).get(),
                         "Expected UserOne and Wallet's User after creation are not equal."),
                 () -> assertEquals(localCurrencyOne,
-                        currencyService.findOne(userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get().getCurrencyId()).get(),
+                        currencyService.findOne(userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get().getCurrencyId()).get(),
                         "Expected CurrencyOne and Wallet's User after creation are not equal."),
                 () -> assertEquals(walletCountBefore + 1, walletCountAfter, "Number of Wallet should be 1 more bigger, but it's not that.")
         );
@@ -216,12 +216,12 @@ class WalletServiceImplTest {
         assertAll(
                 () -> assertNotNull(actualWallet, "Updated wallet is Null, but must not be that"),
                 () -> assertEquals(localWalletThree, actualWallet, "Expected Wallet and updated one are not equal."),
-                () -> assertEquals(localUserCurrencyTwo, userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get()),
+                () -> assertEquals(localUserCurrencyTwo, userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get()),
                 () -> assertEquals(localUserOne,
-                        userService.findOne(userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get().getUserId()).get(),
+                        userService.findOne(userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get().getUserId()).get(),
                         "Expected UserOne and Wallet's User after update are not the same"),
                 () -> assertEquals(localCurrencyTwo,
-                        currencyService.findOne(userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get().getCurrencyId()).get(),
+                        currencyService.findOne(userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get().getCurrencyId()).get(),
                         "Expected CurrencyOne and Wallet's Currency after update are not the same")
         );
 
@@ -276,12 +276,12 @@ class WalletServiceImplTest {
         assertAll(
                 () -> assertNotNull(actualWallet, "Updated wallet is Null, but must not be that"),
                 () -> assertEquals(localWalletThree, actualWallet, "Expected Wallet and updated one are not equal."),
-                () -> assertEquals(localUserCurrencyOne, userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get()),
+                () -> assertEquals(localUserCurrencyOne, userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get()),
                 () -> assertEquals(localUserOne,
-                        userService.findOne(userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get().getUserId()).get(),
+                        userService.findOne(userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get().getUserId()).get(),
                         "Expected UserOne and Wallet's User after update are not the same"),
                 () -> assertEquals(localCurrencyOne,
-                        currencyService.findOne(userCurrencyServiceImpl.findOne(actualWallet.getUserCurrencyId()).get().getCurrencyId()).get(),
+                        currencyService.findOne(userCurrencyService.findOne(actualWallet.getUserCurrencyId()).get().getCurrencyId()).get(),
                         "Expected CurrencyOne and Wallet's Currency after update are not the same")
         );
 
@@ -336,16 +336,16 @@ class WalletServiceImplTest {
         long walletCountAfter = walletService.findAll().count();
 
         Optional<Wallet> actualWallet = walletService.findOne(localWalletId);
-        Optional<UserCurrency> actualUserCurrency = userCurrencyServiceImpl.findOne(localUserCurrencyOne.getId());
+        Optional<UserCurrency> actualUserCurrency = userCurrencyService.findOne(localUserCurrencyOne.getId());
 
         assertAll(
                 () -> assertFalse(actualWallet.isPresent(), "Deleted object exists, wtf?"),
                 () -> assertTrue(actualUserCurrency.isPresent(), "UserCurrency disappeared after Wallet deletion method."),
                 () -> assertEquals(localUserOne,
-                        userService.findOne(userCurrencyServiceImpl.findOne(localUserCurrencyId).get().getUserId()).get(),
+                        userService.findOne(userCurrencyService.findOne(localUserCurrencyId).get().getUserId()).get(),
                         "User disappeared or changed after Wallet deletion method."),
                 () -> assertEquals(localCurrencyOne,
-                        currencyService.findOne(userCurrencyServiceImpl.findOne(localUserCurrencyId).get().getCurrencyId()).get(),
+                        currencyService.findOne(userCurrencyService.findOne(localUserCurrencyId).get().getCurrencyId()).get(),
                         "Currency disappeared or changed after Wallet deletion method.")
         );
 
@@ -357,6 +357,7 @@ class WalletServiceImplTest {
     @Test
     public void deleteWallet_notExists() throws Exception {
         Wallet walletForDelete = new Wallet("walletForDelete", localUserCurrencyTwo.getId());
+        walletForDelete.setId(666L);
         Throwable localException = Assertions.expectThrows(NullPointerException.class,
                 () -> walletService.delete(walletForDelete.getId()));
         assertEquals("Object doesn't exist", localException.getMessage());
