@@ -10,7 +10,6 @@ import java.util.Arrays;
 public class CoreApplication {
 
 	public static void main(String[] args) {
-		/*SpringApplication.run(CoreApplication.class, args);*/
 
 		ApplicationContext ctx = SpringApplication.run(CoreApplication.class, args);
 
