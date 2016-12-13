@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class UserCategoryServiceImpl extends BaseCategoryServiceImpl<UserCategory> {
+public class UserCategoryServiceImpl extends BaseCategoryServiceImpl<UserCategory> implements UserCategoryService {
 
     private final UserCategoryDao userCategoryDao;
 
