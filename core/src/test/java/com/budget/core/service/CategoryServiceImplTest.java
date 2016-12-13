@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.expectThrows;
         DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class
 })
-class CategoryServiceTest {
+class CategoryServiceImplTest {
 
     @Autowired
     private CategoryServiceImpl categoryService;
@@ -49,7 +49,7 @@ class CategoryServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        category = Category.builder().name("CategoryServiceTest").type(OperationType.CREDIT).build();
+        category = Category.builder().name("CategoryServiceImplTest").type(OperationType.CREDIT).build();
 
         category = categoryService.create(category);
         AssertSqlCount.reset();

@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
         DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class
 })
-public class UserCategoryServiceTest {
+public class UserCategoryServiceImplTest {
     @Autowired
     private UserService userService;
     @Autowired
@@ -47,7 +47,7 @@ public class UserCategoryServiceTest {
         user = new User("login", "password");
         userService.create(user);
 
-        userCategory = UserCategory.builder().name("UserCategoryServiceTest").type(OperationType.CREDIT).userId(user.getId()).build();
+        userCategory = UserCategory.builder().name("UserCategoryServiceImplTest").type(OperationType.CREDIT).userId(user.getId()).build();
         userCategoryService.create(userCategory);
 
         AssertSqlCount.reset();

@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-public class CategoryServiceImpl extends BaseCategoryServiceImpl<Category> {
+public class CategoryServiceImpl extends BaseCategoryServiceImpl<Category> implements CategoryService {
 
     private final CategoryDao categoryDao;
 
@@ -29,7 +29,7 @@ public class CategoryServiceImpl extends BaseCategoryServiceImpl<Category> {
         return categoryDao.findByParentId(parentId);
     }
 
-    @Override
+    //@Override
     void checkExistence(Category category) {
         Optional<Category> existedCategory = categoryDao.findByNameAndTypeAndParentId(category.getName(), category.getType(), category.getParentId());
         if(existedCategory.isPresent() && existedCategory.get().getId() != category.getId()) {

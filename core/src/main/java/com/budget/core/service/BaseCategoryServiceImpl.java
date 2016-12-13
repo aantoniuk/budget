@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-abstract class BaseCategoryServiceImpl<T extends BaseCategory> extends AbstractServiceImpl<T> {
+abstract class BaseCategoryServiceImpl<T extends BaseCategory> extends AbstractServiceImpl<T> implements BaseCategoryService<T> {
 
     abstract void checkExistence(T t);
 
