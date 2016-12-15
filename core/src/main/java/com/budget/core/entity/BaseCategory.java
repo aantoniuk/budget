@@ -23,7 +23,7 @@ public abstract class BaseCategory {
     public BaseCategory(@NonNull String name, OperationType type, Boolean enable, Long parentId) {
         this.name = name;
         this.type = type;
-        if(enable == null) {
+        if (enable == null) {
             this.enable = true;
         } else {
             this.enable = enable;

@@ -127,7 +127,7 @@ abstract class BaseCategoryServiceImpl<T extends BaseCategory> extends AbstractS
 
     T find(@NonNull Long id) {
         Optional<T> categoryOpt = findOne(id);
-        if(!categoryOpt.isPresent()) {
+        if (!categoryOpt.isPresent()) {
             throw new NullPointerException("Category isn't found by id=" + id);
         }
         return categoryOpt.get();

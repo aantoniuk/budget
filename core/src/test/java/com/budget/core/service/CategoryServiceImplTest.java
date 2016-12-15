@@ -41,10 +41,8 @@ import static org.junit.jupiter.api.Assertions.expectThrows;
         DbUnitTestExecutionListener.class
 })
 class CategoryServiceImplTest {
-
     @Autowired
     private CategoryServiceImpl categoryService;
-
     private Category category;
 
     @BeforeEach
