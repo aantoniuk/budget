@@ -30,4 +30,8 @@ public class ExceptionHandlingController {
     @ResponseStatus(value = HttpStatus.CONFLICT, reason = "HandlerController: Object is same and can't be updated.")
     @ExceptionHandler(IllegalArgumentException.class)
     public void illegalArgumentException() {}
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "HandlerController: Wrong request to Controller.")
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public void unsupportedOperationException() {}
 }

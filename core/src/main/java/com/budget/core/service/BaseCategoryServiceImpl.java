@@ -53,7 +53,7 @@ abstract class BaseCategoryServiceImpl<T extends BaseCategory> extends AbstractS
     }
 
     @Transactional
-    public T updateName(@NonNull Long id, @NonNull String name) {
+    public T updateName(@NonNull Long id, @NonNull String name) throws NullPointerException {
         T category = find(id);
 
         category.setName(name);
@@ -101,11 +101,11 @@ abstract class BaseCategoryServiceImpl<T extends BaseCategory> extends AbstractS
     public T updateParent(@NonNull Long id, Long parentId) {
         T category = find(id);
         // nothing to update
-        if(Objects.equals(parentId, category.getParentId())) {
+        if (Objects.equals(parentId, category.getParentId())) {
             return category;
         }
-        if(parentId != null) {
-            if(parentId.equals(category.getId())) {
+        if (parentId != null) {
+            if (parentId.equals(category.getId())) {
                 throw new IllegalArgumentException("Parent can't be itself");
             }
             // copy type and enable form parent

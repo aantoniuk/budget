@@ -28,16 +28,11 @@ public class CategoryServiceImpl extends BaseCategoryServiceImpl<Category> imple
         if (supplier.get().count() == 0) {
             throw new ObjectNotFoundException("Service: Objects Categories with type " + type + " has not been found for GETTING.");
         }
-        //return categoryDao.findByType(type);
         return supplier.get();
     }
 
     public Stream<Category> findByParentId(Long parentId) {
         Supplier<Stream<Category>> supplier = () -> categoryDao.findByParentId(parentId);
-        if (supplier.get().count() == 0) {
-            throw new ObjectNotFoundException("Service: Objects Categories with parentId " + parentId + " has not been found for GETTING.");
-        }
-        //return categoryDao.findByParentId(parentId);
         return supplier.get();
     }
 
@@ -47,7 +42,7 @@ public class CategoryServiceImpl extends BaseCategoryServiceImpl<Category> imple
         if (existedCategory.isPresent() && existedCategory.get().getId() != category.getId()) {
             String exMsg = String.format("Object already exists with name=%s, type=$s", category.getName(), category.getType().name());
             throw new IllegalArgumentException(exMsg);
-        }
+    }
     }
 
     @Override

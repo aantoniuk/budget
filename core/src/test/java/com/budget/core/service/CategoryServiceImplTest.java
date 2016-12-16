@@ -2,9 +2,11 @@ package com.budget.core.service;
 
 import com.budget.core.Utils.OperationType;
 import com.budget.core.entity.Category;
+import com.budget.core.exception.ObjectNotFoundException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.jeeconf.hibernate.performancetuning.sqltracker.AssertSqlCount;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,14 +87,16 @@ class CategoryServiceImplTest {
                 () -> assertNotNull(categories),
                 () -> assertEquals(categories.findFirst().get(), category)
         );
-        assertSelectCount(1);
+        assertSelectCount(2);
     }
 
     @Test
     public void findByType_notExists() throws Exception {
-        Stream<Category> categories = categoryService.findByType(OperationType.DEBIT);
-        assertFalse(categories.findFirst().isPresent());
-
+        Throwable localException = Assertions.expectThrows(ObjectNotFoundException.class, () -> categoryService.findByType(OperationType.DEBIT));
+        assertAll(
+                () -> assertEquals("Service: Objects Categories with type " + OperationType.DEBIT.name() + " has not been found for GETTING.",
+                        localException.getMessage(), "Expected throw message and really thrown are not equal.")
+        );
         assertSelectCount(1);
     }
 

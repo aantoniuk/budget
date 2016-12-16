@@ -39,9 +39,8 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     @Transactional
     public User create(User user) {
         Optional userOptional = findByLogin(user.getLogin());
-        if(userOptional.isPresent()) {
+        if (userOptional.isPresent()) {
             throw new IllegalArgumentException("User already exists with login:" + user.getLogin());
-            // throw new NullPointerException("User already exists with login:" + user.getLogin());
         }
         User savedUser = userDao.save(user);
 

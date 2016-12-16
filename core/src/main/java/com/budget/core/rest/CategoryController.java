@@ -25,7 +25,6 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public ResponseEntity<Category> create(@RequestBody Category category) {
         try {
@@ -38,14 +37,60 @@ public class CategoryController {
         }
     }
 
-//    @RequestMapping(path = "/update", method = RequestMethod.PUT)
-//    public ResponseEntity<Category> update(@RequestBody Category category) {
-//        Category savedCategory = categoryService.update(category);
-//        return new ResponseEntity<>(savedCategory, HttpStatus.OK);
-//    }
-/*
+    @RequestMapping(path = "/update/{id}/name/{name}", method = RequestMethod.PUT)
+    public ResponseEntity<Category> updateName(@PathVariable("id") Long id, @PathVariable("name") String name) {
+        try {
+            Category savedCategory = categoryService.updateName(id, name);
+            return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("Wrong data for update of Category with id=" + id + ": " + iae.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Didn't find Category with id=" + id + " for update: " + npe.getMessage());
+        }
+    }
+
+    @RequestMapping(path = "/update/{id}/type/{type}", method = RequestMethod.PUT)
+    public ResponseEntity<Category> updateType(@PathVariable("id") Long id, @PathVariable("type") String type) {
+        try {
+            Category savedCategory = categoryService.updateType(id, OperationType.valueOf(type));
+            return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+        } catch (UnsupportedOperationException usoe) {
+            throw new UnsupportedOperationException("Wrong operation for update of Category with id=" + id + ": " + usoe.getMessage());
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("Wrong data for update of Category with id=" + id + ": " + iae.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Didn't find Category with id=" + id + " for update: " + npe.getMessage());
+        }
+    }
+
+    @RequestMapping(path = "/update/{id}/parentid/{parentid}", method = RequestMethod.PUT)
+    public ResponseEntity<Category> updateParent(@PathVariable("id") Long id, @PathVariable("parentid") Long parentId) {
+        try {
+            Category savedCategory = categoryService.updateParent(id, parentId);
+            return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("Wrong data for update of Category with id=" + id + ": " + iae.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Didn't find Category with id=" + id + " for update: " + npe.getMessage());
+        }
+    }
+
+    @RequestMapping(path = "/update/{id}/enable/{enable}", method = RequestMethod.PUT)
+    public ResponseEntity<Category> updateEnable(@PathVariable("id") Long id, @PathVariable("enable") String enable) {
+        try {
+            Category savedCategory = categoryService.updateEnable(id, Boolean.getBoolean(enable));
+            return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+        } catch (UnsupportedOperationException usoe) {
+            throw new UnsupportedOperationException("Wrong operation for update of Category with id=" + id + ": " + usoe.getMessage());
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("Wrong data for update of Category with id=" + id + ": " + iae.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Didn't find Category with id=" + id + " for update: " + npe.getMessage());
+        }
+    }
+
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public ResponseEntity<Category> remove(@PathVariable("id") long id) throws ObjectNotFoundException {
+    public ResponseEntity<Category> remove(@PathVariable("id") Long id) throws ObjectNotFoundException {
         Optional<Category> localCategory = categoryService.findOne(id);
         if (!localCategory.isPresent()) {
             throw new ObjectNotFoundException("REST Controller: Object Category with id " + id +" has not been found for DELETION.");
@@ -53,7 +98,6 @@ public class CategoryController {
         categoryService.delete(id);
         return new ResponseEntity<>(localCategory.get(), HttpStatus.NO_CONTENT);
     }
-*/
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     public ResponseEntity<Category> getOne(@PathVariable("id") Long id) throws ObjectNotFoundException {
@@ -83,13 +127,4 @@ public class CategoryController {
             throw new ObjectNotFoundException("REST Controller: Object Category with parentId " + id + " has not been found for GETTING.");
         }
     }
-
-//    @RequestMapping(method = RequestMethod.GET)
-//    public ResponseEntity<List<Category>> getAll() throws ObjectNotFoundException {
-//        List<Category> categoryList = categoryService.findAll();
-//        if (categoryList.isEmpty()) {
-//            throw new ObjectNotFoundException("REST Controller: All Category Objects have not been found.");
-//        }
-//        return new ResponseEntity<>(categoryList, HttpStatus.OK);
-//    }
 }

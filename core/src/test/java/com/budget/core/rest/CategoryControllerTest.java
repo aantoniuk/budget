@@ -33,6 +33,7 @@ public class CategoryControllerTest {
     private CategoryService serviceMock;
 
     private final static Long BASECATEGORY_ONE_ID = 17L, CATEGORY_ONE_ID = 2L, BASECATEGORY_TWO_ID = Long.MAX_VALUE;
+    private final static String CATEGORY_NEW_NAME = "newName";
 
     private Optional<Category> baseCategoryOptionalNotNullOne, categoryOptionalNotNullOne, categoryOptionalNull;
 
@@ -165,80 +166,172 @@ public class CategoryControllerTest {
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
-    /*
     @Test
-    public void deleteById_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
-        Mockito.when(serviceMock.findOne(CATEGORY_ID_LONG)).thenReturn(categoryOptionalNotNullOne);
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/categories/{id}", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON))
+    public void deleteCategory_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Mockito.when(serviceMock.findOne(BASECATEGORY_ONE_ID)).thenReturn(baseCategoryOptionalNotNullOne);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/categories/{id}", BASECATEGORY_ONE_ID).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(categoryOptionalNotNullOne.get().getId())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findOne(CATEGORY_ID_LONG);
-        Mockito.verify(serviceMock, Mockito.times(1)).delete(CATEGORY_ID_LONG);
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.hasToString(baseCategoryOptionalNotNullOne.get().getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(baseCategoryOptionalNotNullOne.get().getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.type", Matchers.is(baseCategoryOptionalNotNullOne.get().getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.enable", Matchers.hasToString(baseCategoryOptionalNotNullOne.get().getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.parentId", Matchers.isEmptyOrNullString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].id", Matchers.hasToString(categoryOptionalNotNullOne.get().getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].name", Matchers.is(categoryOptionalNotNullOne.get().getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].type", Matchers.is(categoryOptionalNotNullOne.get().getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].enable", Matchers.hasToString(categoryOptionalNotNullOne.get().getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].parentId", Matchers.hasToString(baseCategoryOptionalNotNullOne.get().getId().toString())));
+        Mockito.verify(serviceMock, Mockito.times(1)).findOne(BASECATEGORY_ONE_ID);
+        Mockito.verify(serviceMock, Mockito.times(1)).delete(BASECATEGORY_ONE_ID);
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
 
     @Test
-    public void deleteById_CategoriesNotFound_ShouldReturnRightResponseException() throws Exception {
-        Mockito.when(serviceMock.findOne(CATEGORY_ID_LONG)).thenReturn(categoryOptionalNull);
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/categories/{id}", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON))
+    public void deleteCategory_CategoryNotFound_ShouldReturnRightResponseException() throws Exception {
+        Mockito.when(serviceMock.findOne(BASECATEGORY_ONE_ID)).thenReturn(categoryOptionalNull);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/categories/{id}", BASECATEGORY_ONE_ID).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findOne(CATEGORY_ID_LONG);
+        Mockito.verify(serviceMock, Mockito.times(1)).findOne(BASECATEGORY_ONE_ID);
+        Mockito.verify(serviceMock, Mockito.times(0)).delete(BASECATEGORY_ONE_ID);
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
-
-//    @Test
-//    public void updateById_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
-//        Mockito.when(serviceMock.findOne(CATEGORY_ID_LONG)).thenReturn(categoryOptionalNotNullOne);
-//        categoryOptionalNotNullOne.get().setName("Medicine");
-//        Gson gson = new Gson();
-//        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
-//
-//        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON)
-//                .contentType(MediaType.APPLICATION_JSON).content(jsonString))
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is((int) categoryOptionalNotNullOne.get().getId())))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(categoryOptionalNotNullOne.get().getName())));
-//
-//        Mockito.verify(serviceMock, Mockito.times(1)).findOne(CATEGORY_ID_LONG);
-//        Mockito.verify(serviceMock, Mockito.times(1)).update(org.mockito.Matchers.refEq(categoryOptionalNotNullOne.get()));
-//        Mockito.verifyNoMoreInteractions(serviceMock);
-//    }
 
     @Test
-    public void updateById_CategoriesNotFound_ShouldReturnRightResponseException() throws Exception {
-        Mockito.when(serviceMock.findOne(CATEGORY_ID_LONG)).thenReturn(categoryOptionalNull);
-        Gson gson = new Gson();
-        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update", CATEGORY_ID_LONG).accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON).content(jsonString))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-
-        Mockito.verify(serviceMock, Mockito.times(1)).findOne(CATEGORY_ID_LONG);
+    public void updateName_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Category localCategoryOne = categoryOptionalNotNullOne.get();
+        Category localCategoryOneNew = new Category(CATEGORY_NEW_NAME, localCategoryOne.getType(),
+                localCategoryOne.getEnable(), localCategoryOne.getParentId());
+        localCategoryOneNew.setId(localCategoryOne.getId());
+        Mockito.when(serviceMock.updateName(CATEGORY_ONE_ID, CATEGORY_NEW_NAME)).thenReturn(localCategoryOneNew);
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/name/{name}", CATEGORY_ONE_ID, CATEGORY_NEW_NAME)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.hasToString(localCategoryOne.getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(CATEGORY_NEW_NAME)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.type", Matchers.is(localCategoryOne.getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.enable", Matchers.hasToString(localCategoryOne.getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.parentId", Matchers.hasToString(localCategoryOne.getParentId().toString())));
+        Mockito.verify(serviceMock, Mockito.times(1)).updateName(CATEGORY_ONE_ID, CATEGORY_NEW_NAME);
         Mockito.verifyNoMoreInteractions(serviceMock);
     }
-*/
 
+    @Test
+    public void updateNameWithIllegalParam_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Mockito.when(serviceMock.updateName(CATEGORY_ONE_ID, CATEGORY_NEW_NAME)).thenThrow(new IllegalArgumentException());
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/name/{name}", CATEGORY_ONE_ID, CATEGORY_NEW_NAME)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+        Mockito.verify(serviceMock, Mockito.times(1)).updateName(CATEGORY_ONE_ID, CATEGORY_NEW_NAME);
+        Mockito.verifyNoMoreInteractions(serviceMock);
+    }
 
-//
-//    @Test
-//    public void createByName_CategoriesFound_ShouldReturnRightResponseException() throws Exception {
-//        Mockito.when(serviceMock.findByName(categoryOptionalNotNullOne.get().getName())).thenReturn(categoryOptionalNotNullOne);
-//        Gson gson = new Gson();
-//        String jsonString = gson.toJson(categoryOptionalNotNullOne.get());
-//
-//        mockMvc.perform(MockMvcRequestBuilders.post("/categories/create").accept(MediaType.APPLICATION_JSON)
-//                .contentType(MediaType.APPLICATION_JSON).content(jsonString))
-//                .andExpect(MockMvcResultMatchers.status().isConflict());
-//
-//        Mockito.verify(serviceMock, Mockito.times(1)).findByName(categoryOptionalNotNullOne.get().getName());
-//        Mockito.verifyNoMoreInteractions(serviceMock);
-//    }
+    @Test
+    public void updateNameWithIllegalParam_CategoryNotFound_ShouldReturnRightResponseEntity() throws Exception {
+        Mockito.when(serviceMock.updateName(CATEGORY_ONE_ID, CATEGORY_NEW_NAME)).thenThrow(new NullPointerException());
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/name/{name}", CATEGORY_ONE_ID, CATEGORY_NEW_NAME)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+        Mockito.verify(serviceMock, Mockito.times(1)).updateName(CATEGORY_ONE_ID, CATEGORY_NEW_NAME);
+        Mockito.verifyNoMoreInteractions(serviceMock);
+    }
+
+    @Test
+    public void updateType_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Category localCategoryOne = categoryOptionalNotNullOne.get();
+        Category localBaseCategoryOne = baseCategoryOptionalNotNullOne.get();
+        Category updatedBaseCategoryOne = new Category(localBaseCategoryOne.getName(), OperationType.CREDIT,
+                localBaseCategoryOne.getEnable(), localBaseCategoryOne.getParentId());
+        updatedBaseCategoryOne.setId(BASECATEGORY_ONE_ID);
+        Category updatedCategoryOne = new Category(localCategoryOne.getName(), OperationType.CREDIT, localCategoryOne.getEnable(),
+                localCategoryOne.getParentId());
+        updatedCategoryOne.setId(localCategoryOne.getId());
+        updatedBaseCategoryOne.setChildren(Sets.newSet(updatedCategoryOne));
+        Mockito.when(serviceMock.updateType(BASECATEGORY_ONE_ID, OperationType.CREDIT)).thenReturn(updatedBaseCategoryOne);
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/type/{type}", BASECATEGORY_ONE_ID, OperationType.CREDIT.name())
+                .accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.hasToString(localBaseCategoryOne.getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(localBaseCategoryOne.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.type", Matchers.is(updatedBaseCategoryOne.getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.enable", Matchers.hasToString(localBaseCategoryOne.getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.parentId", Matchers.isEmptyOrNullString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].id", Matchers.hasToString(localCategoryOne.getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].name", Matchers.is(localCategoryOne.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].type", Matchers.is(OperationType.CREDIT.name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].enable", Matchers.hasToString(localCategoryOne.getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].parentId", Matchers.hasToString(localBaseCategoryOne.getId().toString())));
+        Mockito.verify(serviceMock, Mockito.times(1)).updateType(BASECATEGORY_ONE_ID, OperationType.CREDIT);
+        Mockito.verifyNoMoreInteractions(serviceMock);
+    }
+
+    @Test
+    public void updateTypeOfSubcategory_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Mockito.when(serviceMock.updateType(CATEGORY_ONE_ID, OperationType.CREDIT)).thenThrow(new UnsupportedOperationException());
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/type/{type}", CATEGORY_ONE_ID, OperationType.CREDIT.name())
+                .accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isBadRequest());
+        Mockito.verify(serviceMock, Mockito.times(1)).updateType(CATEGORY_ONE_ID, OperationType.CREDIT);
+        Mockito.verifyNoMoreInteractions(serviceMock);
+    }
+
+    @Test
+    public void updateEnable_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Category localCategoryOne = categoryOptionalNotNullOne.get();
+        Category localBaseCategoryOne = baseCategoryOptionalNotNullOne.get();
+        Category updatedBaseCategoryOne = new Category(localBaseCategoryOne.getName(), localBaseCategoryOne.getType(),
+                !localBaseCategoryOne.getEnable(), localBaseCategoryOne.getParentId());
+        updatedBaseCategoryOne.setId(BASECATEGORY_ONE_ID);
+        Category updatedCategoryOne = new Category(localCategoryOne.getName(), localCategoryOne.getType(), !localCategoryOne.getEnable(),
+                localCategoryOne.getParentId());
+        updatedCategoryOne.setId(localCategoryOne.getId());
+        updatedBaseCategoryOne.setChildren(Sets.newSet(updatedCategoryOne));
+        Mockito.when(serviceMock.updateEnable(BASECATEGORY_ONE_ID, !localBaseCategoryOne.getEnable())).thenReturn(updatedBaseCategoryOne);
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/enable/{enable}", BASECATEGORY_ONE_ID, String.valueOf(!localBaseCategoryOne.getEnable()))
+                .accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.hasToString(updatedBaseCategoryOne.getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(updatedBaseCategoryOne.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.type", Matchers.is(updatedBaseCategoryOne.getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.enable", Matchers.hasToString(updatedBaseCategoryOne.getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.parentId", Matchers.isEmptyOrNullString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].id", Matchers.hasToString(updatedCategoryOne.getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].name", Matchers.is(updatedCategoryOne.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].type", Matchers.is(updatedCategoryOne.getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].enable", Matchers.hasToString(updatedCategoryOne.getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.children[0].parentId", Matchers.hasToString(updatedBaseCategoryOne.getId().toString())));
+        Mockito.verify(serviceMock, Mockito.times(1)).updateEnable(BASECATEGORY_ONE_ID, !localBaseCategoryOne.getEnable());
+        Mockito.verifyNoMoreInteractions(serviceMock);
+    }
+
+    @Test
+    public void updateParentId_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Category localCategoryOne = categoryOptionalNotNullOne.get();
+        Category localBaseCategoryOne = baseCategoryOptionalNotNullOne.get();
+        Category updatedBaseCategoryOne = new Category(localBaseCategoryOne.getName(), localBaseCategoryOne.getType(),
+                localBaseCategoryOne.getEnable(), localBaseCategoryOne.getParentId());
+        updatedBaseCategoryOne.setId(BASECATEGORY_ONE_ID);
+        Category updatedCategoryOne = new Category(localCategoryOne.getName(), localCategoryOne.getType(), localCategoryOne.getEnable(),
+                BASECATEGORY_TWO_ID);
+        updatedCategoryOne.setId(localCategoryOne.getId());
+        updatedBaseCategoryOne.setChildren(Sets.newSet());
+        Mockito.when(serviceMock.updateParent(CATEGORY_ONE_ID, BASECATEGORY_TWO_ID)).thenReturn(updatedCategoryOne);
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/parentid/{parentid}", CATEGORY_ONE_ID, BASECATEGORY_TWO_ID)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.hasToString(localCategoryOne.getId().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is(localCategoryOne.getName())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.type", Matchers.is(localCategoryOne.getType().name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.enable", Matchers.hasToString(localCategoryOne.getEnable().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.parentId",Matchers.hasToString(updatedCategoryOne.getParentId().toString())));
+        Mockito.verify(serviceMock, Mockito.times(1)).updateParent(CATEGORY_ONE_ID, BASECATEGORY_TWO_ID);
+        Mockito.verifyNoMoreInteractions(serviceMock);
+    }
+
+    @Test
+    public void updateParentIdWrong_CategoryIsFound_ShouldReturnRightResponseEntity() throws Exception {
+        Mockito.when(serviceMock.updateParent(CATEGORY_ONE_ID, BASECATEGORY_TWO_ID)).thenThrow(new IllegalArgumentException());
+        mockMvc.perform(MockMvcRequestBuilders.put("/categories/update/{id}/parentid/{parentid}", CATEGORY_ONE_ID, BASECATEGORY_TWO_ID)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+        Mockito.verify(serviceMock, Mockito.times(1)).updateParent(CATEGORY_ONE_ID, BASECATEGORY_TWO_ID);
+        Mockito.verifyNoMoreInteractions(serviceMock);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -254,7 +347,4 @@ public class CategoryControllerTest {
         categoryOptionalNotNullOne = Optional.of(localCategoryOne);
         categoryOptionalNull = Optional.ofNullable(null);
     }
-
-    @After
-    public void tearDown() throws Exception {}
 }
