@@ -87,7 +87,7 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     }
 
     private void deleteUserCategories(Long userId) {
-        userCategoryService.findByParentId(userId, null).
+        userCategoryService.findByUserIdAndParentId(userId, null).
                 forEach(item -> userCategoryService.delete(item.getId()));
     }
 

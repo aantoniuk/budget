@@ -11,7 +11,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true, exclude = {"children"})
 @NoArgsConstructor
 @Entity
-public class UserCategory extends BaseCategory{
+public class UserCategory extends BaseCategory {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="parentId")
     private Set<UserCategory> children = new HashSet<>();

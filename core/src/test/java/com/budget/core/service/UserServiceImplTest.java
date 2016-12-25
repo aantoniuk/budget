@@ -141,7 +141,7 @@ public class UserServiceImplTest {
         );
 
         // check root categories
-        List<UserCategory> userCategories = userCategoryService.findByParentId(newUser.getId(), null).collect(Collectors.toList());
+        List<UserCategory> userCategories = userCategoryService.findByUserIdAndParentId(newUser.getId(), null).collect(Collectors.toList());
         assertAll(
                 () -> assertNotNull(userCategories),
                 () -> assertEquals(1, userCategories.size()),
@@ -152,7 +152,7 @@ public class UserServiceImplTest {
                 () -> assertEquals(newUser.getId(), userCategories.get(0).getUserId())
         );
         // check sub categories
-        List<UserCategory> userSubCategories = userCategoryService.findByParentId(newUser.getId(),
+        List<UserCategory> userSubCategories = userCategoryService.findByUserIdAndParentId(newUser.getId(),
                 userCategories.get(0).getId()).collect(Collectors.toList());
         assertAll(
                 () -> assertNotNull(userSubCategories),
@@ -225,7 +225,7 @@ public class UserServiceImplTest {
         assertDeleteCount(3);
 
         Optional<User> userOpt = userService.findOne(newUser.getId());
-        Stream<UserCategory> categoryStream = userCategoryService.findByParentId(newUser.getId(), null);
+        Stream<UserCategory> categoryStream = userCategoryService.findByUserIdAndParentId(newUser.getId(), null);
         Stream<UserCurrency> currencyStream = userCurrencyService.findByUserId(newUser.getId());
 
         assertAll(

@@ -106,7 +106,7 @@ public class UserCategoryServiceImplTest {
 
     @Test
     public void findByParent_withNullValue() throws Exception {
-        Stream<UserCategory> expectedUserCategories = userCategoryService.findByParentId(user.getId(), null);
+        Stream<UserCategory> expectedUserCategories = userCategoryService.findByUserIdAndParentId(user.getId(), null);
         assertAll(
                 () -> assertNotNull(expectedUserCategories),
                 () -> assertEquals(expectedUserCategories.findFirst().get(), userCategory)
@@ -119,7 +119,7 @@ public class UserCategoryServiceImplTest {
         UserCategory secondCategory = UserCategory.builder().name("second").type(OperationType.CREDIT).userId(user.getId()).build();
         userCategoryService.create(secondCategory);
 
-        Stream<UserCategory> expectedUserCategories = userCategoryService.findByParentId(user.getId(), null);
+        Stream<UserCategory> expectedUserCategories = userCategoryService.findByUserIdAndParentId(user.getId(), null);
         assertAll(
                 () -> assertNotNull(expectedUserCategories),
                 () -> assertEquals(2, expectedUserCategories.count())
@@ -132,7 +132,7 @@ public class UserCategoryServiceImplTest {
         UserCategory childCategory = UserCategory.builder().name("childCategory").parentId(userCategory.getId()).build();
         userCategoryService.create(childCategory);
 
-        Stream<UserCategory> expectedUserCategories = userCategoryService.findByParentId(user.getId(), userCategory.getId());
+        Stream<UserCategory> expectedUserCategories = userCategoryService.findByUserIdAndParentId(user.getId(), userCategory.getId());
         assertAll(
                 () -> assertNotNull(expectedUserCategories),
                 () -> assertEquals(expectedUserCategories.findFirst().get(), childCategory)

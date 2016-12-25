@@ -31,7 +31,7 @@ public class UserCategoryServiceImpl extends BaseCategoryServiceImpl<UserCategor
         return userCategoryDao.findByParentId(parentId);
     }
 
-    public Stream<UserCategory> findByParentId(Long userId, Long parentId) {
+    public Stream<UserCategory> findByUserIdAndParentId(Long userId, Long parentId) {
         return userCategoryDao.findByUserIdAndParentId(userId, parentId);
     }
 
@@ -39,16 +39,16 @@ public class UserCategoryServiceImpl extends BaseCategoryServiceImpl<UserCategor
     @Transactional
     public UserCategory create(UserCategory category) {
         // root user category
-        if(category.getParentId() == null) {
-            if(category.getUserId() == null) {
+        if (category.getParentId() == null) {
+            if (category.getUserId() == null) {
                 throw new NullPointerException("UserId can't be empty");
             }
         } else {
             // sub user category
             UserCategory parent = findParent(category.getParentId());
-            if(category.getUserId() == null) {
+            if (category.getUserId() == null) {
                 category.setUserId(parent.getUserId());
-            } else if(!category.getUserId().equals(parent.getUserId())) {
+            } else if (!category.getUserId().equals(parent.getUserId())) {
                     throw new IllegalArgumentException("UserId of Category and Parent Category should be the same");
             }
         }
